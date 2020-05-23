@@ -1,0 +1,31 @@
+{
+  "locale": "nl",
+  "title": "Weersverwachting",
+  "width": 550,
+  "top_margin": 50,
+  "bottom_margin": 50,
+  "right_margin": 150,
+  "legend_position": [300, 50],
+  "x_axis_position": "minimum",
+  "x_expand_to_grid": true,
+  "y_window_minimum": 0,
+  "y_window_maximum": 100,
+  "grid": {
+    "x_axis": [ { "axis_color": null, "label_color": "63-63-63", "marker_color": "200-200-200"} ],
+    "y_axis": [ { "axis_color": null, "label_color": "63-63-63", "marker_color": null, "unit": "%" } ]
+
+  },
+  "graph": { 
+    "type": "bar",
+    "width": 15,
+    "auto_shift": true 
+  },
+  "graphs": {
+      "Kans op zon": {
+      "colors": ["15-63-255"]
+    },
+    "Kans op neerslag": {
+       "colors": ["30-128-240"]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "XAxisConfigurations": [ { "position": "MINIMUM"} ],
+    "YAxisConfigurations": [],
+    "gridConfiguration": {
+        "gridStyleConfiguration": {
+            "color": "777777",
+            "stroke": { 
+                "dash": [ 0.75, 0.25 ],
+                "width": 1.0
+            }
+        }
+    },
+    "gridMode": "NONE"
+}

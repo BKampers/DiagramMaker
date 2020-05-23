@@ -1,0 +1,46 @@
+{
+  "title": "South Pole Temperatures",
+  "width": 550,
+  "top_margin": 50,
+  "right_margin": 115,
+  "legend_position": [450, 50],
+  "y_window_minimum": -90,
+  "y_window_maximum": 0,
+  "left_offset": 30,
+  "right_offset": 30,
+  "grid": {
+    "x_axis": [ { "label_color": "63-63-63", "axis_color": null, "marker_color": null, "position": "maximum" } ],
+    "y_axis": [ { "label_color": "63-63-63", "axis_color": null, "marker_color": null } ]
+  },
+  "graphs": {
+    "Record high": {
+      "type": "bar",
+      "base": 0,
+      "width": 11,
+      "colors": ["15-63-255","15-63-255"]
+    },
+    "Average high": {
+      "type": "rectangle",
+      "width": 24,
+      "height": 5,
+      "border": "0-0-255",
+      "color": "190-190-255"
+    },
+    "Daily mean": {
+       "type": "bar",
+       "base": 0,
+       "width": 25,
+       "colors": ["30-128-240","30-128-240"]
+    },
+    "Average low": {
+      "image": "http://clipart-library.com/image_gallery/33853.png",
+      "width": 30,
+      "height": 30
+    },
+    "Record low": {
+      "type": "star",
+      "points": 8,
+      "color": "0-0-255"
+    }
+  }
+}

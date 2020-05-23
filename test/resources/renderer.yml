@@ -1,0 +1,20 @@
+!Chart
+XAxisConfigurations: 
+-  position: ORIGIN
+   title: t
+   unit: s
+XGridMarkerConfiguration: 
+   type: Integer
+YAxisConfigurations: []
+gridConfiguration: 
+   gridStyleConfiguration: 
+      color: 777777
+      stroke: 
+         dash: 
+         - 0.75
+         - 0.25
+         width: 1.0
+gridMode: NONE
+legendPosition: 
+   x: 1
+   y: 23

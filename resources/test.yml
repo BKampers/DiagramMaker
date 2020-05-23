@@ -1,0 +1,58 @@
+{
+  "title": "South Pole Temperatures",
+  "width": 550,
+  "topMargin": 50,
+  "rightMargin": 115,
+  "legendPosition": {"x":450, "y":50},
+  "YWindowMinimum": -90,
+  "YWindowMaximum": 0,
+  "leftOffset": 30,
+  "rightOffset": 30,
+  "dataRendererConfigurations": [
+    {
+      "key": "Record high",
+      "type": "bar",
+      "base": 0,
+      "width": 11,
+      "areaDrawStyleConfiguration": {
+        "color": "15-63-255"      }
+    },
+    {
+      "key": "Average high",
+      "type": "rectangle",
+      "width": 25,
+      "height": 5,
+      "areaDrawStyleConfiguration": {
+        "borderColor": "0-0-255",
+        "color": "190-190-255"
+      }
+    },
+    {
+      "key":"Daily mean",
+      "type": "bar",
+      "base": 0,
+      "width": 25,
+      "areaDrawStyleConfiguration": {
+        "color": "30-128-240",
+        "borderColor": "0-0-255"
+      }
+    },
+    {
+      "key": "Average low",
+      "width": 30,
+      "height": 30,
+      "areaDrawStyleConfiguration": {
+        "image": "http://clipart-library.com/image_gallery/33853.png"
+      }
+    },
+    {
+      "key": "Record low",
+      "type": "star",
+      "points": 8,
+      "areaDrawStyleConfiguration": {
+        "colors": [ "0-0-255", "255-255-255" ],
+        "borderColor": "0-0-178"
+      }
+    }
+  ]
+}

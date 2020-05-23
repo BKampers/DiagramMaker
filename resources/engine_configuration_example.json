@@ -1,0 +1,34 @@
+{
+  "title": "Engine Curves",
+  "left_margin": 55,
+  "right_margin": 55,
+  "legend_position": [350, 0],
+  "graph": {
+    "type": "line",
+    "width": 3
+  },
+  "graphs": {
+    "Power": { "color": "255-0-0" },
+    "Torque": { "color": "0-0-255" }
+  },
+  "grid": {
+    "y_axis": [
+      {
+        "position": "minimum", 
+        "graph": "Power",
+        "title": "Power", 
+        "unit": "kW",
+        "minimum": 0,
+        "maximum": 120
+      },
+      {
+        "position": "maximum", 
+        "graph": "Torque",
+        "title": "Torque",
+        "unit": "Nm",
+        "minimum": 80,
+        "maximum": 500,
+        "label_offset": 30 }
+    ]
+  }
+}
