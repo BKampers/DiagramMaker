@@ -17,9 +17,6 @@ public class DataRendererConfiguration {
     private Integer points;
     private Integer innerRadius;
     private Integer outerRadius;
-//    private String color;
-//    private String[] colors;
-//    private String borderColor;
     private AreaDrawStyleConfiguration areaDrawStyleConfiguration;
     private String image;
 

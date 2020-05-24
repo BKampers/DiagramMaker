@@ -12,6 +12,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.logging.*;
 import javax.imageio.*;
 
 
@@ -82,18 +83,48 @@ public class ChartRendererBuilder {
         }
         else {
             for (AxisConfiguration axisConfiguration : axisConfigurations) {
-                axisRenderers.add(buildAxisRenderer(axisConfiguration));
+                try {
+                    axisRenderers.add(buildAxisRenderer(axisConfiguration));
+                }
+                catch (ChartConfigurationException ex) {
+                    Logger.getLogger(ChartRendererBuilder.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         return axisRenderers;
     }
 
 
-    private AxisRenderer buildAxisRenderer(AxisConfiguration axisConfiguration) {
-        DefaultAxisRenderer axisRenderer = new DefaultAxisRenderer(axisConfiguration.getPosition());
+    private AxisRenderer buildAxisRenderer(AxisConfiguration axisConfiguration) throws ChartConfigurationException {
+        DefaultAxisRenderer axisRenderer = new DefaultAxisRenderer(
+            (axisConfiguration.getPosition() == null) ? ChartRenderer.AxisPosition.MINIMUM : axisConfiguration.getPosition(),
+            buildAxisStyle(axisConfiguration.getAxisStyleConfiguration()));
         axisRenderer.setTitle(axisConfiguration.getTitle());
         axisRenderer.setUnit(axisConfiguration.getUnit());
         return axisRenderer;
+    }
+
+
+    private AxisStyle buildAxisStyle(AxisStyleConfiguration axisStyleConfiguration) throws ChartConfigurationException {
+        AxisStyle axisStyle = new AxisStyle();
+        if (axisStyleConfiguration != null) {
+            if (axisStyleConfiguration.getAxisColor() != null) {
+                axisStyle.setAxisColor(buildColor(axisStyleConfiguration.getAxisColor()));
+            }
+            if (axisStyleConfiguration.getMarkerColor() != null) {
+                axisStyle.setMarkerColor(buildColor(axisStyleConfiguration.getMarkerColor()));
+            }
+            if (axisStyleConfiguration.getLabelColor() != null) {
+                axisStyle.setLabelColor(buildColor(axisStyleConfiguration.getLabelColor()));
+            }
+            if (axisStyleConfiguration.getTitleColor() != null) {
+                axisStyle.setTitleColor(buildColor(axisStyleConfiguration.getTitleColor()));
+            }
+            if (axisStyleConfiguration.getUnitColor() != null) {
+                axisStyle.setUnitColor(buildColor(axisStyleConfiguration.getUnitColor()));
+            }
+        }
+        return axisStyle;
     }
 
 
@@ -264,6 +295,9 @@ public class ChartRendererBuilder {
 
 
     private Color buildColor(String colorCode) throws ChartConfigurationException {
+        if (YAML_NULL.equals(colorCode)) {
+            return null;
+        }
         try {
             String[] split = colorCode.split("-");
             if (split.length > 1) {
@@ -282,6 +316,8 @@ public class ChartRendererBuilder {
 
 
     private final ArrayList<Object> keys;
+
+    private static final String YAML_NULL = "null";
 
     private static final int DEFAULT_BOTTOM_MARGIN = 25;
     private static final int DEFAULT_TOP_MARGIN = 25;

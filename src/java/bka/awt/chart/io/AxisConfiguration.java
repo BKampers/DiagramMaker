@@ -10,8 +10,10 @@ import lombok.*;
 @Data
 public class AxisConfiguration {
 
+    private String key;
     private ChartRenderer.AxisPosition position;
     private String title;
     private String unit;
+    private AxisStyleConfiguration axisStyleConfiguration;
 
 }
