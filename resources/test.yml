@@ -8,6 +8,15 @@
   "YWindowMaximum": 0,
   "leftOffset": 30,
   "rightOffset": 30,
+  "YAxisConfigurations": [ 
+    {
+      "axisStyleConfiguration": {
+        "labelColor": "777777",
+        "axisColor": null,
+        "markerColor": null
+      }
+    }
+  ],
   "dataRendererConfigurations": [
     {
       "key": "Record high",
@@ -15,7 +24,8 @@
       "base": 0,
       "width": 11,
       "areaDrawStyleConfiguration": {
-        "color": "15-63-255"      }
+        "color": "15-63-255"
+      }
     },
     {
       "key": "Average high",
