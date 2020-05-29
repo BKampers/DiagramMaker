@@ -18,6 +18,7 @@ public class DataRendererConfiguration {
     private Integer innerRadius;
     private Integer outerRadius;
     private AreaDrawStyleConfiguration areaDrawStyleConfiguration;
+    private PieDrawStyleConfiguration pieDrawStyleConfiguration;
     private String image;
 
 }

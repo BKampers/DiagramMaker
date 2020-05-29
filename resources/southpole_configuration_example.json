@@ -1,46 +1,78 @@
 {
   "title": "South Pole Temperatures",
   "width": 550,
-  "top_margin": 50,
-  "right_margin": 115,
-  "legend_position": [450, 50],
-  "y_window_minimum": -90,
-  "y_window_maximum": 0,
-  "left_offset": 30,
-  "right_offset": 30,
-  "grid": {
-    "x_axis": [ { "label_color": "63-63-63", "axis_color": null, "marker_color": null, "position": "maximum" } ],
-    "y_axis": [ { "label_color": "63-63-63", "axis_color": null, "marker_color": null } ]
-  },
-  "graphs": {
-    "Record high": {
+  "topMargin": 50,
+  "rightMargin": 115,
+  "legendPosition": {"x":450, "y":50},
+  "YWindowMinimum": -90,
+  "YWindowMaximum": 0,
+  "leftOffset": 30,
+  "rightOffset": 30,
+  "YAxisConfigurations": [ 
+    {
+      "axisStyleConfiguration": {
+        "labelColor": "777777",
+        "axisColor": null,
+        "markerColor": null
+      }
+    }
+  ],
+  "XAxisConfigurations": [ 
+    {
+      "position": "MAXIMUM",
+      "axisStyleConfiguration": {
+        "labelColor": "777777",
+        "axisColor": null,
+        "markerColor": null
+      }
+    }
+  ],
+  "dataRendererConfigurations": [
+    {
+      "key": "Record high",
       "type": "bar",
       "base": 0,
       "width": 11,
-      "colors": ["15-63-255","15-63-255"]
+      "areaDrawStyleConfiguration": {
+        "color": "15-63-255"
+      }
     },
-    "Average high": {
+    {
+      "key": "Average high",
       "type": "rectangle",
-      "width": 24,
+      "width": 25,
       "height": 5,
-      "border": "0-0-255",
-      "color": "190-190-255"
+      "areaDrawStyleConfiguration": {
+        "borderColor": "0-0-255",
+        "color": "190-190-255"
+      }
     },
-    "Daily mean": {
-       "type": "bar",
-       "base": 0,
-       "width": 25,
-       "colors": ["30-128-240","30-128-240"]
+    {
+      "key":"Daily mean",
+      "type": "bar",
+      "base": 0,
+      "width": 25,
+      "areaDrawStyleConfiguration": {
+        "color": "30-128-240",
+        "borderColor": "0-0-255"
+      }
     },
-    "Average low": {
-      "image": "http://clipart-library.com/image_gallery/33853.png",
+    {
+      "key": "Average low",
       "width": 30,
-      "height": 30
+      "height": 30,
+      "areaDrawStyleConfiguration": {
+        "image": "http://clipart-library.com/image_gallery/33853.png"
+      }
     },
-    "Record low": {
+    {
+      "key": "Record low",
       "type": "star",
       "points": 8,
-      "color": "0-0-255"
+      "areaDrawStyleConfiguration": {
+        "colors": [ "0-0-255", "255-255-255" ],
+        "borderColor": "0-0-178"
+      }
     }
-  }
+  ]
 }

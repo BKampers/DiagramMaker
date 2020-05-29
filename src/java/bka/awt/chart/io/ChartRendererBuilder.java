@@ -5,6 +5,7 @@
 package bka.awt.chart.io;
 
 import bka.awt.*;
+import bka.awt.chart.*;
 import bka.awt.chart.custom.*;
 import bka.awt.chart.grid.*;
 import bka.awt.chart.render.*;
@@ -12,15 +13,16 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.*;
 import javax.imageio.*;
+import nl.bartkampers.diagrams.*;
 
 
 public class ChartRendererBuilder {
 
 
-    public ChartRendererBuilder(Collection<Object> keys) {
-        this.keys = new ArrayList(keys);
+    public ChartRendererBuilder(Figures figures, Map<Number, String> labeledNumbers) {
+        this.figures = figures;
+        this.labeledNumbers = new HashMap<>(labeledNumbers);
     }
 
 
@@ -40,11 +42,11 @@ public class ChartRendererBuilder {
         chartRenderer.setYWindowMinimum(chartConfiguration.getYWindowMinimum());
         chartRenderer.setYWindowMaximum(chartConfiguration.getYWindowMaximum());
         chartRenderer.setOffsets(chartConfiguration.getLeftOffset(), chartConfiguration.getRightOffset());
-        chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxisConfigurations()));
-        chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxisConfigurations()));
         chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridConfiguration()), chartConfiguration.getGridMode());
-        chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGridMarkerConfiguration()));
-        chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGridMarkerConfiguration()));
+        chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGridMarkerConfiguration(), figures.getXTypes()));
+        chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGridMarkerConfiguration(), figures.getYTypes()));
+        ArrayList keys = new ArrayList(figures.getChartData().keySet());
+        axisesRequired = true;
         if (chartConfiguration.getDataRendererConfigurations() == null) {
             Color[] palette = Palette.generateColors(keys.size());
             for (int i = 0; i < keys.size(); ++i) {
@@ -52,9 +54,14 @@ public class ChartRendererBuilder {
             }
         }
         else {
+            axisesRequired = false;
             for (DataRendererConfiguration dataRendererConfiguration : chartConfiguration.getDataRendererConfigurations()) {
                 chartRenderer.setRenderer(dataRendererConfiguration.getKey(), buildDataRenderer(dataRendererConfiguration));
             }
+        }
+        if (axisesRequired) {
+            chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxisConfigurations()));
+            chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxisConfigurations()));
         }
         return chartRenderer;
     }
@@ -76,19 +83,14 @@ public class ChartRendererBuilder {
     }
 
 
-    private Collection<AxisRenderer> buildAxisRenderers(AxisConfiguration[] axisConfigurations) {
+    private Collection<AxisRenderer> buildAxisRenderers(AxisConfiguration[] axisConfigurations) throws ChartConfigurationException {
         Collection<AxisRenderer> axisRenderers = new ArrayList<>();
         if (axisConfigurations == null) {
             axisRenderers.add(new DefaultAxisRenderer(ChartRenderer.AxisPosition.MINIMUM));
         }
         else {
             for (AxisConfiguration axisConfiguration : axisConfigurations) {
-                try {
-                    axisRenderers.add(buildAxisRenderer(axisConfiguration));
-                }
-                catch (ChartConfigurationException ex) {
-                    Logger.getLogger(ChartRendererBuilder.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                axisRenderers.add(buildAxisRenderer(axisConfiguration));
             }
         }
         return axisRenderers;
@@ -137,14 +139,39 @@ public class ChartRendererBuilder {
     }
 
 
-    private Grid buildGrid(GridMarkerConfiguration gridMarkerConfiguration) {
+    private Grid buildGrid(GridMarkerConfiguration gridMarkerConfiguration, Map<Object, EnumSet<Figures.DataType>> dataTypes) {
         if (gridMarkerConfiguration != null && gridMarkerConfiguration.getType() != null) {
             switch (gridMarkerConfiguration.getType()) {
+                case "Text":
+                    return new MapGrid(labeledNumbers);
                 case "Integer":
                     return new IntegerGrid();
             }
         }
-        return new NumberGrid();
+        return gridType(figures.typeSet(dataTypes));
+    }
+
+
+    private Grid gridType(EnumSet<Figures.DataType> types) {
+        switch (getMajorDataType(types)) {
+            case TEXT:
+                return new MapGrid(labeledNumbers);
+            case DATE:
+                return new CalendarGrid();
+            case NUMBER:
+            default:
+                return new NumberGrid();
+        }
+    }
+
+
+    private static Figures.DataType getMajorDataType(EnumSet<Figures.DataType> types) {
+        for (Figures.DataType type : Figures.DataType.values()) {
+            if (types.contains(type)) {
+                return type;
+            }
+        }
+        return Figures.DataType.NUMBER;
     }
 
 
@@ -156,15 +183,34 @@ public class ChartRendererBuilder {
     private AbstractDataAreaRenderer buildDataRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
         if (dataRendererConfiguration.getType() != null) {
             switch (dataRendererConfiguration.getType()) {
+                case "pie":
+                    return buildPieRenderer(dataRendererConfiguration);
                 case "bar":
+                    axisesRequired = true;
                     return buildBarRenderer(dataRendererConfiguration);
                 case "rectangle":
+                    axisesRequired = true;
                     return buildRectangleRenderer(dataRendererConfiguration);
                 case "star":
+                    axisesRequired = true;
                     return buildStarRenderer(dataRendererConfiguration);
             }
         }
+        axisesRequired = true;
         return buildOvalDotRenderer(dataRendererConfiguration);
+    }
+
+
+    private AbstractDataAreaRenderer buildPieRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+        return new DefaultPieSectorRenderer(buildPieDrawStyle(dataRendererConfiguration.getPieDrawStyleConfiguration()));
+    }
+
+
+    private PieDrawStyle buildPieDrawStyle(PieDrawStyleConfiguration pieDrawStyleConfiguration) throws ChartConfigurationException {
+        if (pieDrawStyleConfiguration.getColorsByKey() != null) {
+            return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColorsByKey()));
+        }
+        return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColors()));
     }
 
 
@@ -285,6 +331,34 @@ public class ChartRendererBuilder {
     }
 
 
+    private Color[][] buildColors(Map<String, java.util.List<String>> colorsByKey) throws ChartConfigurationException {
+        ChartData<Number, Number> chartData = figures.getChartData().values().iterator().next();
+        Color[] defaults = Palette.generateColors(chartData.size());
+        Color[][] colors = new Color[chartData.size()][];
+        int i = 0;
+        for (ChartDataElement<Number, Number> element : chartData) {
+            java.util.List<String> colorCodes = colorsByKey.get(Objects.toString(element.getKey()));
+            if (colorCodes != null) {
+                colors[i] = buildColors(colorCodes);
+            }
+            else {
+                colors[i] = new Color[] { defaults[i], defaults[i].darker() };
+            }
+            ++i;
+        }
+        return colors;
+    }
+
+
+    private Color[][] buildColors(String[][] colorCodes) throws ChartConfigurationException {
+        Color[][] colors = new Color[colorCodes.length][];
+        for (int i = 0; i < colorCodes.length; ++i) {
+            colors[i] = buildColors(colorCodes[i]);
+        }
+        return colors;
+    }
+
+
     private Color[] buildColors(String[] colorCodes) throws ChartConfigurationException {
         Color[] colors = new Color[colorCodes.length];
         for (int i = 0; i < colorCodes.length; ++i) {
@@ -294,30 +368,45 @@ public class ChartRendererBuilder {
     }
 
 
+    private Color[] buildColors(java.util.List<String> colorCodes) throws ChartConfigurationException {
+        Color[] colors = new Color[colorCodes.size()];
+        for (int i = 0; i < colorCodes.size(); ++i) {
+            colors[i] = buildColor(colorCodes.get(i));
+        }
+        return colors;
+    }
+
+
     private Color buildColor(String colorCode) throws ChartConfigurationException {
-        if (YAML_NULL.equals(colorCode)) {
+        if (NULL.equals(colorCode)) {
             return null;
         }
         try {
             String[] split = colorCode.split("-");
-            if (split.length > 1) {
+            if (split.length == 1 && (colorCode.length() == 6 || colorCode.length() == 8)) {
+                long rgba = Long.parseLong(colorCode, 16);
+                return new Color((int) rgba, colorCode.length() == 8);
+            }
+            if (2 <= split.length && split.length <= 4) {
                 int rgba = 0;
                 for (int i = 0; i < split.length; ++i) {
                     rgba = (rgba << 8) | Integer.parseInt(split[i]);
                 }
-                return new Color(rgba);
+                return new Color(rgba, (split.length == 4));
             }
-            return new Color((int) Long.parseLong(colorCode, 16));
+            throw new ChartConfigurationException("Invalid color code " + colorCode);
         }
         catch (NumberFormatException ex) {
             throw new ChartConfigurationException("Invalid color code " + colorCode, ex);
         }
     }
 
+    private boolean axisesRequired;
 
-    private final ArrayList<Object> keys;
+    private final Figures figures;
+    private final Map<Number, String> labeledNumbers;
 
-    private static final String YAML_NULL = "null";
+    private static final String NULL = "null";
 
     private static final int DEFAULT_BOTTOM_MARGIN = 25;
     private static final int DEFAULT_TOP_MARGIN = 25;

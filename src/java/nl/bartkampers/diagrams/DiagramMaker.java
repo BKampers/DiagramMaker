@@ -112,7 +112,10 @@ public class DiagramMaker {
             }
             index = filename.indexOf("_configuration_example");
             if (index > 0) {
-                configurationsMap.put(filename.substring(0, index), filename);
+                String key = filename.substring(0, index);
+                if (! configurationsMap.containsKey(key) || filename.endsWith(".yml")) {
+                    configurationsMap.put(key, filename);
+                }
             }
         }
         Map<String, String[]> examples = new HashMap<>();
@@ -148,7 +151,7 @@ public class DiagramMaker {
                loaded = loadConfiguration(new YamlReader(getConfiguration()));
             }
             catch (ChartConfigurationException ex) {
-                getLogger().log(Level.WARNING, "", ex);
+                getLogger().log(Level.WARNING, "Could not read configuration", ex);
                 loaded = loadConfiguration();
             }
             return createImage(loaded, type);
@@ -217,7 +220,10 @@ public class DiagramMaker {
             if (chart == null) {
                 chart = new ChartConfiguration();
             }
-            ChartRendererBuilder builder = new ChartRendererBuilder(parsedFigures.getChartData().keySet());
+            else {
+                storeYaml(chart);
+            }
+            ChartRendererBuilder builder = new ChartRendererBuilder(parsedFigures, PARSER.getLabeledNumbers());
             result.chartRenderer = builder.buildChartRenderer(chart);
             Map<Object, ChartData<Number, Number>> chartData = parsedFigures.getChartData();
             result.chartRenderer.setCharts(chartData);
@@ -227,6 +233,22 @@ public class DiagramMaker {
         }
         catch (YamlException | JSONException | UserDataException ex) {
             throw new ChartConfigurationException(ex);
+        }
+    }
+
+
+    private void storeYaml(ChartConfiguration chartConfiguration) {
+        File file = getPath(RESOURCES_DIRECTORY, "out.yaml").toFile();
+        if (! file.exists()) {
+            try {
+                YamlWriter writer = new YamlWriter(new FileWriter(file));
+                writer.getConfig().setClassTag("Chart", ChartConfiguration.class);
+                writer.write(chartConfiguration);
+                writer.close();
+            }
+            catch (IOException | YamlException ex) {
+                Logger.getLogger(DiagramMaker.class.getName()).log(Level.FINE, "Error writing Yaml", ex);
+            }
         }
     }
 
@@ -575,21 +597,6 @@ public class DiagramMaker {
     }
     
 
-    private static Color[][] createPiePalette(Figures parsedFigures, JSONObject object) throws JSONException, UserDataException {
-        JSONObject colorConfiguration = object.optJSONObject(COLORS);
-        ChartData<Number, Number> chartData = parsedFigures.getChartData().values().iterator().next();
-        Color[] defaults = Palette.generateColors(chartData.size());
-        Color[][] colors = new Color[chartData.size()][];
-        int i = 0;
-        for (ChartDataElement<Number, Number> element : chartData) {
-            Color[] configuredColors = (colorConfiguration != null) ? PARSER.getColors(colorConfiguration, element.getKey().toString()) : new Color[] { defaults[i], defaults[i].darker() };
-            colors[i] = configuredColors;
-            ++i;
-        }
-        return colors;
-    }
-
-
     private static AbstractDataAreaRenderer createRenderer(Figures parsedFigures, JSONObject object, Color[] palette, int i) throws UserDataException, JSONException {
         if (object == null) {
             return new OvalDotRenderer(8, DefaultDrawStyle.create(palette[i], palette[i].darker()));
@@ -606,6 +613,21 @@ public class DiagramMaker {
             default:
                 return createRenderer(object, palette, i);
         }
+    }
+
+
+    private static Color[][] createPiePalette(Figures parsedFigures, JSONObject object) throws JSONException, UserDataException {
+        JSONObject colorConfiguration = object.optJSONObject(COLORS);
+        ChartData<Number, Number> chartData = parsedFigures.getChartData().values().iterator().next();
+        Color[] defaults = Palette.generateColors(chartData.size());
+        Color[][] colors = new Color[chartData.size()][];
+        int i = 0;
+        for (ChartDataElement<Number, Number> element : chartData) {
+            Color[] configuredColors = (colorConfiguration != null) ? PARSER.getColors(colorConfiguration, element.getKey().toString()) : new Color[] { defaults[i], defaults[i].darker() };
+            colors[i] = configuredColors;
+            ++i;
+        }
+        return colors;
     }
 
 

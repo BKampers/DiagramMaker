@@ -17,6 +17,16 @@
       }
     }
   ],
+  "XAxisConfigurations": [ 
+    {
+      "position": "MAXIMUM",
+      "axisStyleConfiguration": {
+        "labelColor": "777777",
+        "axisColor": null,
+        "markerColor": null
+      }
+    }
+  ],
   "dataRendererConfigurations": [
     {
       "key": "Record high",

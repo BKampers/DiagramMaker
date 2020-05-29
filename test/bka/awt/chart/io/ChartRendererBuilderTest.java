@@ -8,6 +8,7 @@ import bka.awt.chart.render.*;
 import java.io.*;
 import java.util.*;
 import net.sourceforge.yamlbeans.*;
+import nl.bartkampers.diagrams.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -41,7 +42,7 @@ public class ChartRendererBuilderTest {
        legendPosition.setX(1);
        legendPosition.setY(23);
        chartConfiguration.setLegendPosition(legendPosition);
-       ChartRendererBuilder builder = new ChartRendererBuilder(Collections.emptyList());
+       ChartRendererBuilder builder = new ChartRendererBuilder(new Figures(), Collections.emptyMap());
        YamlWriter writer = new YamlWriter(new FileWriter("test/resources/renderer.yml"));
        writer.getConfig().setClassTag("Chart", ChartConfiguration.class);
        writer.getConfig().setClassTag("Axis", AxisConfiguration.class);

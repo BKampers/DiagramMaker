@@ -52,7 +52,7 @@
                         <textarea style="font-family:Courier" name="figures" cols="85" rows="30"><%=diagramMaker.getFigures()%></textarea><br/>
                     </div>
                     <div style="display: table-cell;">
-                        Configuration (JSON):<br/>
+                        Configuration (Yaml):<br/>
                         <textarea style="font-family:Courier" name="configuration" cols="85" rows="30"><%=diagramMaker.getConfiguration()%></textarea><br/>
                     </div>
                 </div>
