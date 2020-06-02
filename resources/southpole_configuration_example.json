@@ -27,9 +27,8 @@
       }
     }
   ],
-  "dataRendererConfigurations": [
-    {
-      "key": "Record high",
+  "dataRendererConfigurations": {
+    "Record high": {
       "type": "bar",
       "base": 0,
       "width": 11,
@@ -37,8 +36,8 @@
         "color": "15-63-255"
       }
     },
+    "Average high":
     {
-      "key": "Average high",
       "type": "rectangle",
       "width": 25,
       "height": 5,
@@ -47,8 +46,7 @@
         "color": "190-190-255"
       }
     },
-    {
-      "key":"Daily mean",
+    "Daily mean": {
       "type": "bar",
       "base": 0,
       "width": 25,
@@ -57,16 +55,14 @@
         "borderColor": "0-0-255"
       }
     },
-    {
-      "key": "Average low",
+    "Average low": {
       "width": 30,
       "height": 30,
       "areaDrawStyleConfiguration": {
         "image": "http://clipart-library.com/image_gallery/33853.png"
       }
     },
-    {
-      "key": "Record low",
+    "Record low": {
       "type": "star",
       "points": 8,
       "areaDrawStyleConfiguration": {
@@ -74,5 +70,5 @@
         "borderColor": "0-0-178"
       }
     }
-  ]
+  }
 }

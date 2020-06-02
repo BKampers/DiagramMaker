@@ -6,6 +6,9 @@ XAxisConfigurations:
 XGridMarkerConfiguration: 
    type: Integer
 YAxisConfigurations: []
+dataRendererConfigurations: 
+   bar-graph: !bka.awt.chart.io.DataRendererConfiguration
+      type: bar
 gridConfiguration: 
    gridStyleConfiguration: 
       color: 777777

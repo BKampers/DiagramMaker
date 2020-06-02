@@ -10,10 +10,7 @@ import bka.awt.chart.custom.*;
 import bka.awt.chart.grid.*;
 import bka.awt.chart.render.*;
 import java.awt.*;
-import java.io.*;
-import java.net.*;
 import java.util.*;
-import javax.imageio.*;
 import nl.bartkampers.diagrams.*;
 
 
@@ -41,22 +38,47 @@ public class ChartRendererBuilder {
         chartRenderer.setXWindowMaximum(chartConfiguration.getXWindowMaximum());
         chartRenderer.setYWindowMinimum(chartConfiguration.getYWindowMinimum());
         chartRenderer.setYWindowMaximum(chartConfiguration.getYWindowMaximum());
+        if (chartConfiguration.getWindowConfigurations() != null) {
+            chartConfiguration.getWindowConfigurations().forEach((key, range) -> chartRenderer.setYWindow(key, range.getYWindowMinimum(), range.getYWindowMaximum()));
+        }
         chartRenderer.setOffsets(chartConfiguration.getLeftOffset(), chartConfiguration.getRightOffset());
         chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridConfiguration()), chartConfiguration.getGridMode());
         chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGridMarkerConfiguration(), figures.getXTypes()));
         chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGridMarkerConfiguration(), figures.getYTypes()));
-        ArrayList keys = new ArrayList(figures.getChartData().keySet());
-        axisesRequired = true;
+        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
+        axisesRequired = false;
+        Map<String, AbstractDataAreaRenderer> renderers = new HashMap<>();
         if (chartConfiguration.getDataRendererConfigurations() == null) {
             Color[] palette = Palette.generateColors(keys.size());
             for (int i = 0; i < keys.size(); ++i) {
-                chartRenderer.setRenderer(keys.get(i), defaultDataRenderer(palette[i]));
+                AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getDefaultDataRendererConfiguration());
+                if (renderer == null) {
+                    renderer = defaultDataRenderer(palette[i]);
+                }
+                renderers.put(keys.get(i), renderer);
+                chartRenderer.setRenderer(keys.get(i), renderer);
             }
         }
         else {
-            axisesRequired = false;
-            for (DataRendererConfiguration dataRendererConfiguration : chartConfiguration.getDataRendererConfigurations()) {
-                chartRenderer.setRenderer(dataRendererConfiguration.getKey(), buildDataRenderer(dataRendererConfiguration));
+            for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getDataRendererConfigurations().entrySet()) {
+                AbstractDataAreaRenderer renderer = buildDataRenderer(DataRendererConfiguration.merge(
+                    chartConfiguration.getDefaultDataRendererConfiguration(),
+                    entry.getValue()));
+                renderers.put(entry.getKey(), renderer);
+                chartRenderer.setRenderer(entry.getKey(), renderer);
+            }
+        }
+        if (chartConfiguration.getStack() != null) {
+            for (int i = 1; i < chartConfiguration.getStack().length; ++i) {
+                AbstractDataAreaRenderer stackBase = renderers.get(chartConfiguration.getStack()[i - 1]);
+                if (stackBase == null || ! stackBase.supportStack()) {
+                    throw new ChartConfigurationException("Invalid stackBase " + chartConfiguration.getStack()[i - 1]);
+                }
+                AbstractDataAreaRenderer stacked = renderers.get(chartConfiguration.getStack()[i]);
+                if (stacked == null || ! stacked.supportStack()) {
+                    throw new ChartConfigurationException("Invalid stack " + chartConfiguration.getStack()[i]);
+                }
+                stacked.setStackBase(stackBase);
             }
         }
         if (axisesRequired) {
@@ -64,6 +86,28 @@ public class ChartRendererBuilder {
             chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxisConfigurations()));
         }
         return chartRenderer;
+    }
+
+
+    private java.util.List<Object> getGraphOrder(String[] stack) throws ChartConfigurationException {
+        java.util.List<Object> order = new ArrayList<>();
+        if (stack != null) {
+            for (String key : stack) {
+                if (order.contains(key)) {
+                    throw new ChartConfigurationException("Duplicate graph on stack: " + key);
+                }
+                if (! figures.getChartData().keySet().contains(key)) {
+                    throw new ChartConfigurationException("Unknown graph on stack: " + key);
+                }
+                order.add(key);
+            }
+        }
+        for (Object key : figures.getChartData().keySet()) {
+            if (! order.contains(key)) {
+                order.add(key);
+            }
+        }
+        return order;
     }
 
 
@@ -100,9 +144,11 @@ public class ChartRendererBuilder {
     private AxisRenderer buildAxisRenderer(AxisConfiguration axisConfiguration) throws ChartConfigurationException {
         DefaultAxisRenderer axisRenderer = new DefaultAxisRenderer(
             (axisConfiguration.getPosition() == null) ? ChartRenderer.AxisPosition.MINIMUM : axisConfiguration.getPosition(),
-            buildAxisStyle(axisConfiguration.getAxisStyleConfiguration()));
+            buildAxisStyle(axisConfiguration.getAxisStyleConfiguration()),
+            axisConfiguration.getKey());
         axisRenderer.setTitle(axisConfiguration.getTitle());
         axisRenderer.setUnit(axisConfiguration.getUnit());
+
         return axisRenderer;
     }
 
@@ -110,21 +156,25 @@ public class ChartRendererBuilder {
     private AxisStyle buildAxisStyle(AxisStyleConfiguration axisStyleConfiguration) throws ChartConfigurationException {
         AxisStyle axisStyle = new AxisStyle();
         if (axisStyleConfiguration != null) {
+            axisStyle.setLabelOffset((axisStyleConfiguration.getLabelOffset() != null) ? axisStyleConfiguration.getLabelOffset() : DEFAULT_LABEL_OFFSET);
             if (axisStyleConfiguration.getAxisColor() != null) {
-                axisStyle.setAxisColor(buildColor(axisStyleConfiguration.getAxisColor()));
+                axisStyle.setAxisColor(awtBuilder.buildColor(axisStyleConfiguration.getAxisColor()));
             }
             if (axisStyleConfiguration.getMarkerColor() != null) {
-                axisStyle.setMarkerColor(buildColor(axisStyleConfiguration.getMarkerColor()));
+                axisStyle.setMarkerColor(awtBuilder.buildColor(axisStyleConfiguration.getMarkerColor()));
             }
             if (axisStyleConfiguration.getLabelColor() != null) {
-                axisStyle.setLabelColor(buildColor(axisStyleConfiguration.getLabelColor()));
+                axisStyle.setLabelColor(awtBuilder.buildColor(axisStyleConfiguration.getLabelColor()));
             }
             if (axisStyleConfiguration.getTitleColor() != null) {
-                axisStyle.setTitleColor(buildColor(axisStyleConfiguration.getTitleColor()));
+                axisStyle.setTitleColor(awtBuilder.buildColor(axisStyleConfiguration.getTitleColor()));
             }
             if (axisStyleConfiguration.getUnitColor() != null) {
-                axisStyle.setUnitColor(buildColor(axisStyleConfiguration.getUnitColor()));
+                axisStyle.setUnitColor(awtBuilder.buildColor(axisStyleConfiguration.getUnitColor()));
             }
+        }
+        else {
+            axisStyle.setLabelOffset(DEFAULT_LABEL_OFFSET);
         }
         return axisStyle;
     }
@@ -176,15 +226,24 @@ public class ChartRendererBuilder {
 
 
     private GridStyle buildGridStyle(GridStyleConfiguration gridStyleConfiguration) throws ChartConfigurationException {
-        return bka.awt.chart.custom.GridStyle.create(buildStroke(gridStyleConfiguration.getStroke()), buildColor(gridStyleConfiguration.getColor()));
+        if (gridStyleConfiguration.getBackgrounds() != null) {
+            return GridStyle.create(buildStroke(gridStyleConfiguration.getStroke()), awtBuilder.buildColor(gridStyleConfiguration.getColor()), awtBuilder.buildPaintBox(gridStyleConfiguration.getBackgrounds()));
+        }
+        return GridStyle.create(buildStroke(gridStyleConfiguration.getStroke()), awtBuilder.buildColor(gridStyleConfiguration.getColor()));
     }
 
 
     private AbstractDataAreaRenderer buildDataRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+        if (dataRendererConfiguration == null) {
+            return null;
+        }
         if (dataRendererConfiguration.getType() != null) {
             switch (dataRendererConfiguration.getType()) {
                 case "pie":
                     return buildPieRenderer(dataRendererConfiguration);
+                case "line":
+                    axisesRequired = true;
+                    return buildLineRenderer(dataRendererConfiguration);
                 case "bar":
                     axisesRequired = true;
                     return buildBarRenderer(dataRendererConfiguration);
@@ -206,11 +265,25 @@ public class ChartRendererBuilder {
     }
 
 
+    private AbstractDataAreaRenderer buildLineRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+        return new DefaultLineRenderer(buildLineDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
+    }
+
+
+    private LineDrawStyle buildLineDrawStyle(AreaDrawStyleConfiguration areaDrawStyleConfiguration) throws ChartConfigurationException {
+        return LineDrawStyle.create(awtBuilder.buildColor(areaDrawStyleConfiguration.getColor()));
+    }
+
+
     private PieDrawStyle buildPieDrawStyle(PieDrawStyleConfiguration pieDrawStyleConfiguration) throws ChartConfigurationException {
-        if (pieDrawStyleConfiguration.getColorsByKey() != null) {
-            return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColorsByKey()));
+        Color[] defaults = Palette.generateColors(figures.getChartData().values().iterator().next().size());
+        if (pieDrawStyleConfiguration == null) {
+            return PieDrawStyle.create(defaults);
         }
-        return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColors()));
+        if (pieDrawStyleConfiguration.getColorsByKey() != null) {
+            return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColorsByKey(), defaults));
+        }
+        return PieDrawStyle.create(awtBuilder.buildColors(pieDrawStyleConfiguration.getColors()));
     }
 
 
@@ -258,20 +331,30 @@ public class ChartRendererBuilder {
         }
         BarDrawStyle style;
         if (drawStyleConfiguration.getColor() != null) {
-            style = BarDrawStyle.create(buildColor(drawStyleConfiguration.getColor()));
+            style = BarDrawStyle.create(awtBuilder.buildColor(drawStyleConfiguration.getColor()));
+        }
+        else if (drawStyleConfiguration.getColors() != null && drawStyleConfiguration.getColors().length > 0) {
+            if (drawStyleConfiguration.getColors().length == 1) {
+                style = BarDrawStyle.create(awtBuilder.buildColor(drawStyleConfiguration.getColors()[0]));
+            }
+            else {
+                style = BarDrawStyle.create(
+                    awtBuilder.buildColor(drawStyleConfiguration.getColors()[0]),
+                    awtBuilder.buildColor(drawStyleConfiguration.getColors()[1]));
+            }
         }
         else if (drawStyleConfiguration.getCenterColor() != null && drawStyleConfiguration.getEdgeColor() != null) {
-            style = BarDrawStyle.create(buildColor(drawStyleConfiguration.getCenterColor()), buildColor(drawStyleConfiguration.getEdgeColor()));
+            style = BarDrawStyle.create(awtBuilder.buildColor(drawStyleConfiguration.getCenterColor()), awtBuilder.buildColor(drawStyleConfiguration.getEdgeColor()));
         }
         else {
             style = BarDrawStyle.create(Color.BLUE, Color.BLUE);
         }
         if (drawStyleConfiguration.getBorderColor() != null) {
             if (drawStyleConfiguration.getStroke() != null) {
-                style.setBorder(buildColor(drawStyleConfiguration.getBorderColor()), buildStroke(drawStyleConfiguration.getStroke()));
+                style.setBorder(awtBuilder.buildColor(drawStyleConfiguration.getBorderColor()), buildStroke(drawStyleConfiguration.getStroke()));
             }
             else {
-                style.setBorder(buildColor(drawStyleConfiguration.getBorderColor()));
+                style.setBorder(awtBuilder.buildColor(drawStyleConfiguration.getBorderColor()));
             }
         }
         return style;
@@ -283,63 +366,50 @@ public class ChartRendererBuilder {
             return null;
         }
         if (areaDrawStyleConfiguration.getColors() != null) {
-            PointDrawStyle drawStyle = PointDrawStyle.createLinear(buildColors(areaDrawStyleConfiguration.getColors()));
+            PointDrawStyle drawStyle = PointDrawStyle.createLinear(awtBuilder.buildColors(areaDrawStyleConfiguration.getColors()));
             if (areaDrawStyleConfiguration.getBorderColor() != null) {
-                drawStyle.setBorder(buildColor(areaDrawStyleConfiguration.getBorderColor()));
+                drawStyle.setBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
             }
             return drawStyle;
         }
         if (areaDrawStyleConfiguration.getColor() != null && areaDrawStyleConfiguration.getBorderColor() != null && areaDrawStyleConfiguration.getStroke() != null) {
-            return DefaultDrawStyle.create(buildColor(areaDrawStyleConfiguration.getColor()), buildColor(areaDrawStyleConfiguration.getBorderColor()), buildStroke(areaDrawStyleConfiguration.getStroke()));
+            return DefaultDrawStyle.create(awtBuilder.buildColor(areaDrawStyleConfiguration.getColor()), awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()), buildStroke(areaDrawStyleConfiguration.getStroke()));
         }
         if (areaDrawStyleConfiguration.getColor() != null && areaDrawStyleConfiguration.getBorderColor() != null) {
-            return DefaultDrawStyle.create(buildColor(areaDrawStyleConfiguration.getColor()), buildColor(areaDrawStyleConfiguration.getBorderColor()));
+            return DefaultDrawStyle.create(awtBuilder.buildColor(areaDrawStyleConfiguration.getColor()), awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
         }
         if (areaDrawStyleConfiguration.getColor() != null) {
-            return DefaultDrawStyle.createSolid(buildColor(areaDrawStyleConfiguration.getColor()));
+            return DefaultDrawStyle.createSolid(awtBuilder.buildColor(areaDrawStyleConfiguration.getColor()));
         }
         if (areaDrawStyleConfiguration.getBorderColor() != null && areaDrawStyleConfiguration.getStroke() != null) {
-            return DefaultDrawStyle.createBorder(buildColor(areaDrawStyleConfiguration.getBorderColor()), buildStroke(areaDrawStyleConfiguration.getStroke()));
+            return DefaultDrawStyle.createBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()), buildStroke(areaDrawStyleConfiguration.getStroke()));
         }
         if (areaDrawStyleConfiguration.getBorderColor() != null) {
-            return DefaultDrawStyle.createBorder(buildColor(areaDrawStyleConfiguration.getBorderColor()));
+            return DefaultDrawStyle.createBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
         }
         if (areaDrawStyleConfiguration.getImage() != null) {
-            return DefaultDrawStyle.createImage(buildImage(areaDrawStyleConfiguration.getImage()));
+            return DefaultDrawStyle.createImage(awtBuilder.buildImage(areaDrawStyleConfiguration.getImage()));
         }
         return null;
     }
 
 
-    private Image buildImage(String imageUrl) throws ChartConfigurationException {
-        try {
-            return ImageIO.read(new URL(imageUrl));
+    private static Stroke buildStroke(StrokeConfiguration strokeConfiguration) {
+        if (strokeConfiguration == null) {
+            return null;
         }
-        catch (IOException ex) {
-            throw new ChartConfigurationException("Cannot load image from " + imageUrl, ex);
-        }
-    }
-
-
-    private Font buildFont(String fontCode) {
-        return Font.getFont(fontCode);
-    }
-
-
-    private Stroke buildStroke(StrokeConfiguration strokeConfiguration) {
         return new BasicStroke(strokeConfiguration.getWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, strokeConfiguration.getDash(), 10.0f);
     }
 
 
-    private Color[][] buildColors(Map<String, java.util.List<String>> colorsByKey) throws ChartConfigurationException {
+    private Color[][] buildColors(Map<String, java.util.List<String>> colorsByKey, Color[] defaults) throws ChartConfigurationException {
         ChartData<Number, Number> chartData = figures.getChartData().values().iterator().next();
-        Color[] defaults = Palette.generateColors(chartData.size());
         Color[][] colors = new Color[chartData.size()][];
         int i = 0;
         for (ChartDataElement<Number, Number> element : chartData) {
             java.util.List<String> colorCodes = colorsByKey.get(Objects.toString(element.getKey()));
             if (colorCodes != null) {
-                colors[i] = buildColors(colorCodes);
+                colors[i] = awtBuilder.buildColors(colorCodes);
             }
             else {
                 colors[i] = new Color[] { defaults[i], defaults[i].darker() };
@@ -350,68 +420,18 @@ public class ChartRendererBuilder {
     }
 
 
-    private Color[][] buildColors(String[][] colorCodes) throws ChartConfigurationException {
-        Color[][] colors = new Color[colorCodes.length][];
-        for (int i = 0; i < colorCodes.length; ++i) {
-            colors[i] = buildColors(colorCodes[i]);
-        }
-        return colors;
-    }
-
-
-    private Color[] buildColors(String[] colorCodes) throws ChartConfigurationException {
-        Color[] colors = new Color[colorCodes.length];
-        for (int i = 0; i < colorCodes.length; ++i) {
-            colors[i] = buildColor(colorCodes[i]);
-        }
-        return colors;
-    }
-
-
-    private Color[] buildColors(java.util.List<String> colorCodes) throws ChartConfigurationException {
-        Color[] colors = new Color[colorCodes.size()];
-        for (int i = 0; i < colorCodes.size(); ++i) {
-            colors[i] = buildColor(colorCodes.get(i));
-        }
-        return colors;
-    }
-
-
-    private Color buildColor(String colorCode) throws ChartConfigurationException {
-        if (NULL.equals(colorCode)) {
-            return null;
-        }
-        try {
-            String[] split = colorCode.split("-");
-            if (split.length == 1 && (colorCode.length() == 6 || colorCode.length() == 8)) {
-                long rgba = Long.parseLong(colorCode, 16);
-                return new Color((int) rgba, colorCode.length() == 8);
-            }
-            if (2 <= split.length && split.length <= 4) {
-                int rgba = 0;
-                for (int i = 0; i < split.length; ++i) {
-                    rgba = (rgba << 8) | Integer.parseInt(split[i]);
-                }
-                return new Color(rgba, (split.length == 4));
-            }
-            throw new ChartConfigurationException("Invalid color code " + colorCode);
-        }
-        catch (NumberFormatException ex) {
-            throw new ChartConfigurationException("Invalid color code " + colorCode, ex);
-        }
-    }
-
     private boolean axisesRequired;
 
     private final Figures figures;
     private final Map<Number, String> labeledNumbers;
 
-    private static final String NULL = "null";
+    private final AwtBuilder awtBuilder = new AwtBuilder();
 
     private static final int DEFAULT_BOTTOM_MARGIN = 25;
     private static final int DEFAULT_TOP_MARGIN = 25;
     private static final int DEFAULT_RIGHT_MARGIN = 40;
     private static final int DEFAULT_LEFT_MARGIN = 40;
+    private static final int DEFAULT_LABEL_OFFSET = -4;
     private static final int DEFAULT_BAR_WIDTH = 3;
     private static final int DEFAULT_RECTANGLE_HEIGHT = 5;
     private static final int DEFAULT_RECTANGLE_WIDTH = 5;

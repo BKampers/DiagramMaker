@@ -5,6 +5,7 @@
 package bka.awt.chart.io;
 
 import bka.awt.chart.render.ChartRenderer.GridMode;
+import java.util.*;
 import lombok.*;
 
 @Data
@@ -23,6 +24,7 @@ public class ChartConfiguration {
     private Double xWindowMaximum;
     private Double yWindowMinimum;
     private Double yWindowMaximum;
+    private Map<String, RangeConfiguration> windowConfigurations;
     private int leftOffset;
     private int rightOffset;
     private AxisConfiguration[] xAxisConfigurations;
@@ -31,6 +33,8 @@ public class ChartConfiguration {
     private GridMarkerConfiguration xGridMarkerConfiguration;
     private GridMarkerConfiguration yGridMarkerConfiguration;
     private GridMode gridMode;
-    private DataRendererConfiguration[] dataRendererConfigurations;
+    private DataRendererConfiguration defaultDataRendererConfiguration;
+    private Map<String, DataRendererConfiguration> dataRendererConfigurations;
+    private String[] stack;
 
 }

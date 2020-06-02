@@ -6,9 +6,7 @@
   "rightMargin": 100,
   "topMargin": 50,
   "bottomMargin": 50,
-  "dataRendererConfigurations": [
-    {
-      "key": "Percentage",
+  "defaultDataRendererConfiguration": {
       "type": "pie",
       "pieDrawStyleConfiguration": {
         "colorsByKey": {
@@ -25,8 +23,7 @@
           "Overig": ["255-255-255","200-200-200"]
         }
       }
-    }
-  ],
+  },
   "locale": "nl",
   "legendPosition": { "x": 440, "y": 75 }
 }

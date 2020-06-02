@@ -215,7 +215,7 @@ public class DiagramMaker {
         Configuration result = new Configuration();
         try {
             Figures parsedFigures = PARSER.getFigures(getFigures());
-            reader.getConfig().setClassTag("Chart", ChartConfiguration.class);
+            populateYamlConfig(reader.getConfig());
             ChartConfiguration chart = reader.read(ChartConfiguration.class);
             if (chart == null) {
                 chart = new ChartConfiguration();
@@ -242,7 +242,7 @@ public class DiagramMaker {
         if (! file.exists()) {
             try {
                 YamlWriter writer = new YamlWriter(new FileWriter(file));
-                writer.getConfig().setClassTag("Chart", ChartConfiguration.class);
+                populateYamlConfig(writer.getConfig());
                 writer.write(chartConfiguration);
                 writer.close();
             }
@@ -250,6 +250,14 @@ public class DiagramMaker {
                 Logger.getLogger(DiagramMaker.class.getName()).log(Level.FINE, "Error writing Yaml", ex);
             }
         }
+    }
+
+
+    private static void populateYamlConfig(YamlConfig config) {
+        config.setClassTag("Chart", ChartConfiguration.class);
+        config.setClassTag("DataRenderer", DataRendererConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "dataRendererConfigurations", DataRendererConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "windowConfigurations", RangeConfiguration.class);
     }
 
 

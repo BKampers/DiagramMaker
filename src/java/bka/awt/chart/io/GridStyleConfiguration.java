@@ -11,5 +11,6 @@ public class GridStyleConfiguration {
 
     private StrokeConfiguration stroke;
     private String color;
+    private String[][] backgrounds;
 
 }

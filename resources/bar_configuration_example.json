@@ -1,39 +1,40 @@
 {
   "title": "Verkiezingsuitslagen",
-  "y_unit": "%",
   "width": 1000,
   "height": 400,
-  "left_margin": 40,
-  "right_margin": 100,
-  "top_margin": 50,
-  "bottom_margin": 50,
-  "graph": {
+  "leftMargin": 40,
+  "rightMargin": 100,
+  "topMargin": 50,
+  "bottomMargin": 50,
+  "defaultDataRendererConfiguration": {
      "type": "bar",
      "width": 100
   },
-  "graphs": {
-     "CDA":  { "colors": ["0-255-255","14-106-77"] },
-     "CU":   { "colors": ["16-139-221","13-30-83"] },
-     "D66":  { "colors": ["255-255-255","21-164-48"]},
-     "GL":   { "colors": ["252-189-189","48-156-40"]},
-     "PvdA": { "colors": ["252-189-189","213-0-21"] },
-     "PvdD": { "colors": ["24-180-72","12-90-34"] },
-     "PVV":  { "colors": ["255-255-255","8-47-96"]},
-     "SGP":  { "colors": ["255-239-201","255-70-15"] },
-     "SP":   { "colors": ["252-146-146","221-0-0"] },
-     "VVD":  { "colors": ["200-200-255","29-29-87"] },
-     "Overig": { "colors": ["255-255-255","200-200-200"] }
+  "dataRendererConfigurations": {
+     "CDA":  { "areaDrawStyleConfiguration": { "colors": ["0-255-255","14-106-77"] } },
+     "CU":   { "areaDrawStyleConfiguration": { "colors": ["16-139-221","13-30-83"] } },
+     "D66":  { "areaDrawStyleConfiguration": { "colors": ["255-255-255","21-164-48"]} },
+     "GL":   { "areaDrawStyleConfiguration": { "colors": ["252-189-189","48-156-40"] } },
+     "PvdA": { "areaDrawStyleConfiguration": { "colors": ["252-189-189","213-0-21"] } },
+     "PvdD": { "areaDrawStyleConfiguration": { "colors": ["24-180-72","12-90-34"] } },
+     "PVV":  { "areaDrawStyleConfiguration": { "colors": ["255-255-255","8-47-96"] } },
+     "SGP":  { "areaDrawStyleConfiguration": { "colors": ["255-239-201","255-70-15"] } },
+     "SP":   { "areaDrawStyleConfiguration": { "colors": ["252-146-146","221-0-0"] } },
+     "VVD":  { "areaDrawStyleConfiguration": { "colors": ["200-200-255","29-29-87"] } } ,
+     "Overig": { "areaDrawStyleConfiguration": { "colors": ["255-255-255","200-200-200"] } }
   },
   "stack": [ "CDA", "CU", "D66", "GL", "PvdA", "PvdD", "PVV", "SGP", "SP", "VVD", "Overig" ],
-  "y_window_minimum": 0,
-  "grid": {
-    "backgrounds": [ [ "ffffff"], [ "eeeeee" ] ],
-    "fill_mode": "y",
-    "x_axis": [ { "axis_color": "777777", "marker_color": null } ],
-    "y_axis": [ { "axis_color": null, "marker_color": null } ]
+  "YWindowMinimum": 0,
+  "gridConfiguration": {
+    "gridStyleConfiguration": {
+        "backgrounds": [ [ "ffffff" ], [ "eeeeee" ] ]
+    }
   },
-  "left_offset": 90,
-  "right_offset": 90,
+  "gridMode": "Y",
+  "XAxisConfigurations": [ { "axisStyleConfiguration": { "axisColor": "777777", "markerColor": null } } ],
+  "YAxisConfigurations": [ { "axisStyleConfiguration": { "axisColor": null, "markerColor": null }, "unit": "%" } ],
+  "leftOffset": 90,
+  "rightOffset": 90,
   "locale": "nl",
-  "legend_position": [940, 50]
+  "legendPosition": { "x": 940, "y": 50 }
 }

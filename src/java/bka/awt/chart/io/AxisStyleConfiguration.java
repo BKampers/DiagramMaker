@@ -14,5 +14,6 @@ public class AxisStyleConfiguration {
     private String labelColor;
     private String titleColor;
     private String unitColor;
+    private Integer labelOffset;
 
 }
