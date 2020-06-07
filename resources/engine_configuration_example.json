@@ -9,7 +9,7 @@
   },
   "defaultDataRendererConfiguration": {
     "type": "line",
-    "width": 3
+    "areaDrawStyleConfiguration": { "stroke": { "width": 3 } }
   },
   "dataRendererConfigurations": {
     "Power": { "areaDrawStyleConfiguration": { "color": "255-0-0" } },

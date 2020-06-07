@@ -256,6 +256,8 @@ public class DiagramMaker {
     private static void populateYamlConfig(YamlConfig config) {
         config.setClassTag("Chart", ChartConfiguration.class);
         config.setClassTag("DataRenderer", DataRendererConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "XAxisConfigurations", AxisConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "YAxisConfigurations", AxisConfiguration.class);
         config.setPropertyElementType(ChartConfiguration.class, "dataRendererConfigurations", DataRendererConfiguration.class);
         config.setPropertyElementType(ChartConfiguration.class, "windowConfigurations", RangeConfiguration.class);
     }

@@ -45,42 +45,8 @@ public class ChartRendererBuilder {
         chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridConfiguration()), chartConfiguration.getGridMode());
         chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGridMarkerConfiguration(), figures.getXTypes()));
         chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGridMarkerConfiguration(), figures.getYTypes()));
-        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
         axisesRequired = false;
-        Map<String, AbstractDataAreaRenderer> renderers = new HashMap<>();
-        if (chartConfiguration.getDataRendererConfigurations() == null) {
-            Color[] palette = Palette.generateColors(keys.size());
-            for (int i = 0; i < keys.size(); ++i) {
-                AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getDefaultDataRendererConfiguration());
-                if (renderer == null) {
-                    renderer = defaultDataRenderer(palette[i]);
-                }
-                renderers.put(keys.get(i), renderer);
-                chartRenderer.setRenderer(keys.get(i), renderer);
-            }
-        }
-        else {
-            for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getDataRendererConfigurations().entrySet()) {
-                AbstractDataAreaRenderer renderer = buildDataRenderer(DataRendererConfiguration.merge(
-                    chartConfiguration.getDefaultDataRendererConfiguration(),
-                    entry.getValue()));
-                renderers.put(entry.getKey(), renderer);
-                chartRenderer.setRenderer(entry.getKey(), renderer);
-            }
-        }
-        if (chartConfiguration.getStack() != null) {
-            for (int i = 1; i < chartConfiguration.getStack().length; ++i) {
-                AbstractDataAreaRenderer stackBase = renderers.get(chartConfiguration.getStack()[i - 1]);
-                if (stackBase == null || ! stackBase.supportStack()) {
-                    throw new ChartConfigurationException("Invalid stackBase " + chartConfiguration.getStack()[i - 1]);
-                }
-                AbstractDataAreaRenderer stacked = renderers.get(chartConfiguration.getStack()[i]);
-                if (stacked == null || ! stacked.supportStack()) {
-                    throw new ChartConfigurationException("Invalid stack " + chartConfiguration.getStack()[i]);
-                }
-                stacked.setStackBase(stackBase);
-            }
-        }
+        buildDataRenderers(chartConfiguration).forEach((key, renderer) -> chartRenderer.setRenderer(key, renderer));
         if (axisesRequired) {
             chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxisConfigurations()));
             chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxisConfigurations()));
@@ -89,25 +55,65 @@ public class ChartRendererBuilder {
     }
 
 
-    private java.util.List<Object> getGraphOrder(String[] stack) throws ChartConfigurationException {
-        java.util.List<Object> order = new ArrayList<>();
-        if (stack != null) {
-            for (String key : stack) {
-                if (order.contains(key)) {
-                    throw new ChartConfigurationException("Duplicate graph on stack: " + key);
+    private Map<String, AbstractDataAreaRenderer> buildDataRenderers(ChartConfiguration chartConfiguration) throws ChartConfigurationException {
+        Map<String, AbstractDataAreaRenderer> renderers = new LinkedHashMap<>();
+        if (chartConfiguration.getDataRendererConfigurations() != null) {
+            buildConfiguredDataRenderers(chartConfiguration, renderers);
+        }
+        else {
+            buildDefaultDataRenderers(chartConfiguration, renderers);
+        }
+        stackRenderers(chartConfiguration.getStack(), renderers);
+        return renderers;
+    }
+
+
+    private static void stackRenderers(java.util.List<String> stackArray, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
+        if (stackArray != null) {
+            LinkedList<String> stack = new LinkedList(stackArray);
+            AbstractDataAreaRenderer stackBase = null;
+            while (! stack.isEmpty()) {
+                String key = stack.remove();
+                AbstractDataAreaRenderer renderer = renderers.get(key);
+                if (renderer == null) {
+                    throw new ChartConfigurationException("Unknown graph in stack" + key);
                 }
-                if (! figures.getChartData().keySet().contains(key)) {
-                    throw new ChartConfigurationException("Unknown graph on stack: " + key);
+                if (stack.contains(key)) {
+                    throw new ChartConfigurationException("Duplicate graph in stack" + key);
                 }
-                order.add(key);
+                if (stackBase != null) {
+                    if (! renderer.supportStack() || ! stackBase.supportStack()) {
+                        throw new ChartConfigurationException("Stacking not supported by graph");
+                    }
+                    renderer.setStackBase(stackBase);
+                }
+                stackBase = renderer;
             }
         }
-        for (Object key : figures.getChartData().keySet()) {
-            if (! order.contains(key)) {
-                order.add(key);
-            }
+    }
+
+
+    private void buildConfiguredDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
+        index = 0;
+        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getDataRendererConfigurations().entrySet()) {
+            AbstractDataAreaRenderer renderer = buildDataRenderer(MergeUtil.merge(
+                chartConfiguration.getDefaultDataRendererConfiguration(),
+                entry.getValue()));
+            renderers.put(entry.getKey(), renderer);
+            index++;
         }
-        return order;
+    }
+
+
+    private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
+        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
+        for (index = 0; index < keys.size(); ++index) {
+            AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getDefaultDataRendererConfiguration());
+            if (renderer == null) {
+                renderer = defaultDataRenderer(defaultColor());
+            }
+            renderers.put(keys.get(index), renderer);
+        }
     }
 
 
@@ -127,7 +133,7 @@ public class ChartRendererBuilder {
     }
 
 
-    private Collection<AxisRenderer> buildAxisRenderers(AxisConfiguration[] axisConfigurations) throws ChartConfigurationException {
+    private Collection<AxisRenderer> buildAxisRenderers(java.util.List<AxisConfiguration> axisConfigurations) throws ChartConfigurationException {
         Collection<AxisRenderer> axisRenderers = new ArrayList<>();
         if (axisConfigurations == null) {
             axisRenderers.add(new DefaultAxisRenderer(ChartRenderer.AxisPosition.MINIMUM));
@@ -247,16 +253,10 @@ public class ChartRendererBuilder {
                 case "bar":
                     axisesRequired = true;
                     return buildBarRenderer(dataRendererConfiguration);
-                case "rectangle":
-                    axisesRequired = true;
-                    return buildRectangleRenderer(dataRendererConfiguration);
-                case "star":
-                    axisesRequired = true;
-                    return buildStarRenderer(dataRendererConfiguration);
             }
         }
         axisesRequired = true;
-        return buildOvalDotRenderer(dataRendererConfiguration);
+        return buildMarkerRenderer(dataRendererConfiguration);
     }
 
 
@@ -266,12 +266,45 @@ public class ChartRendererBuilder {
 
 
     private AbstractDataAreaRenderer buildLineRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
-        return new DefaultLineRenderer(buildLineDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
+        CoordinateAreaRenderer markerRenderer = null;
+        if (dataRendererConfiguration.getMarker() != null) {
+            markerRenderer = buildMarkerRenderer(dataRendererConfiguration.getMarker());
+        }
+        return new DefaultLineRenderer(buildLineDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()), markerRenderer);
+    }
+
+
+    private CoordinateAreaRenderer buildMarkerRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+        if (dataRendererConfiguration.getType() != null) {
+            switch (dataRendererConfiguration.getType()) {
+                case "rectangle":
+                    return buildRectangleRenderer(dataRendererConfiguration);
+                case "star":
+                    return buildStarRenderer(dataRendererConfiguration);
+            }
+        }
+        return buildOvalDotRenderer(dataRendererConfiguration);
+
     }
 
 
     private LineDrawStyle buildLineDrawStyle(AreaDrawStyleConfiguration areaDrawStyleConfiguration) throws ChartConfigurationException {
-        return LineDrawStyle.create(awtBuilder.buildColor(areaDrawStyleConfiguration.getColor()));
+        Color color = awtBuilder.buildColor(areaDrawStyleConfiguration.getColor());
+        Stroke stroke = buildStroke(areaDrawStyleConfiguration.getStroke());
+        if (color == null && stroke != null) {
+            color = defaultColor();
+        }
+        if (stroke == null && color != null) {
+            stroke = new BasicStroke();
+        }
+        AreaDrawStyle markerDrawStyle = buildAreaDrawStyle(areaDrawStyleConfiguration.getMarkerDrawStyle());
+        if (markerDrawStyle == null) {
+            markerDrawStyle = DefaultDrawStyle.createSolid(defaultColor());
+        }
+        LineDrawStyle style = LineDrawStyle.create(color, stroke, markerDrawStyle);
+        style.setBottomAreaPaint(awtBuilder.buildColor(areaDrawStyleConfiguration.getBottomAreaColor()));
+        style.setTopAreaPaint(awtBuilder.buildColor(areaDrawStyleConfiguration.getTopAreaColor()));
+        return style;
     }
 
 
@@ -295,7 +328,7 @@ public class ChartRendererBuilder {
     }
 
 
-    private AbstractDataAreaRenderer buildRectangleRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+    private CoordinateAreaRenderer buildRectangleRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
         return new RectangleDotRenderer(
             (dataRendererConfiguration.getWidth() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_RECTANGLE_WIDTH,
             (dataRendererConfiguration.getHeight() != null) ? dataRendererConfiguration.getHeight() : DEFAULT_RECTANGLE_HEIGHT,
@@ -303,7 +336,7 @@ public class ChartRendererBuilder {
     }
 
 
-    private AbstractDataAreaRenderer buildOvalDotRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+    private CoordinateAreaRenderer buildOvalDotRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
         return new OvalDotRenderer(
             (dataRendererConfiguration.getWidth() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_SIZE,
             (dataRendererConfiguration.getHeight() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_SIZE,
@@ -311,9 +344,9 @@ public class ChartRendererBuilder {
     }
 
 
-    private AbstractDataAreaRenderer buildStarRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
+    private CoordinateAreaRenderer buildStarRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
         return new PolygonDotRenderer(
-            PolygonFactory.createStar((dataRendererConfiguration.getPoints() != null) ? Math.max(dataRendererConfiguration.getPoints(), MIN_STAR_POINTS) : DEFAULT_STAR_POINTS,
+            PolygonFactory.createStar((dataRendererConfiguration.getPoints() != null) ? Math.max(dataRendererConfiguration.getPoints(), MIN_STAR_POINTS) : index + 3,
                 (dataRendererConfiguration.getInnerRadius() != null) ? dataRendererConfiguration.getInnerRadius() : DEFAULT_INNER_RADIUS,
                 (dataRendererConfiguration.getOuterRadius() != null) ? dataRendererConfiguration.getOuterRadius() : DEFAULT_OUTER_RADIUS),
             buildAreaDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
@@ -420,6 +453,12 @@ public class ChartRendererBuilder {
     }
 
 
+    private Color defaultColor() {
+        return Palette.generateColor(index, figures.getChartData().size());
+    }
+
+
+    private int index;
     private boolean axisesRequired;
 
     private final Figures figures;
@@ -438,7 +477,6 @@ public class ChartRendererBuilder {
     private static final int DEFAULT_SIZE = 10;
     private static final int DEFAULT_OUTER_RADIUS = 8;
     private static final int DEFAULT_INNER_RADIUS = 3;
-    private static final int DEFAULT_STAR_POINTS = 5;
     private static final int MIN_STAR_POINTS = 3;
 
 }

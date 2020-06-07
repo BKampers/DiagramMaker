@@ -1,15 +1,22 @@
 {
-  "graph": {
-    "type": "line", "width":1.0, "dash_array": [10,3,2,3],
-    "top_area_color": "40FFFF00", "bottom_area_color": "40999900",
+  "defaultDataRendererConfiguration": {
+    "type": "line",
+    "areaDrawStyleConfiguration": {
+      "stroke": { "width":1.0, "dash": [10,3,2,3] },
+      "topAreaColor": "40FFFF00", "bottomAreaColor": "40999900",
+      "markerDrawStyle": { "color": "191970" }
+    },
     "marker": {
       "type": "star",
-      "outer_radius": 9,
-      "inner_radius": 3,
-      "colors": ["770077", "880088"]
+      "outerRadius": 9,
+      "innerRadius": 3,
+      "areaDrawStyleConfiguration": { "colors": ["770077", "880088"] }
     }
   },
   "stack": [ "a", "b", "c" ],
-  "grid": { "backgrounds": [ "e6f6f7" , "bfeef2"], "fill_mode": "x" },
-  "legend_position": [475, 0]
+  "gridConfiguration": { 
+    "gridStyleConfiguration": { "backgrounds": [ [ "e6f6f7", "bfeef2" ] ] }
+  },
+  "gridMode": "X",
+  "legendPosition": { "x": 475, "y": 0 }
 }

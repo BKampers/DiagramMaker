@@ -35,9 +35,10 @@ public class ChartRendererBuilderTest {
        axis.setPosition(ChartRenderer.AxisPosition.ORIGIN);
        axis.setTitle("t");
        axis.setUnit("s");
-       AxisConfiguration[] xAxis = new AxisConfiguration[] { axis };
+       ArrayList<AxisConfiguration> xAxis = new ArrayList<>();
+       xAxis.add(axis);
        chartConfiguration.setXAxisConfigurations(xAxis);
-       chartConfiguration.setYAxisConfigurations(new AxisConfiguration[] {});
+       chartConfiguration.setYAxisConfigurations(Collections.emptyList());
        PointConfiguration legendPosition = new PointConfiguration();
        legendPosition.setX(1);
        legendPosition.setY(23);

@@ -27,14 +27,14 @@ public class ChartConfiguration {
     private Map<String, RangeConfiguration> windowConfigurations;
     private int leftOffset;
     private int rightOffset;
-    private AxisConfiguration[] xAxisConfigurations;
-    private AxisConfiguration[] yAxisConfigurations;
+    private List<AxisConfiguration> xAxisConfigurations;
+    private List<AxisConfiguration> yAxisConfigurations;
     private GridConfiguration gridConfiguration;
     private GridMarkerConfiguration xGridMarkerConfiguration;
     private GridMarkerConfiguration yGridMarkerConfiguration;
     private GridMode gridMode;
     private DataRendererConfiguration defaultDataRendererConfiguration;
     private Map<String, DataRendererConfiguration> dataRendererConfigurations;
-    private String[] stack;
+    private List<String> stack;
 
 }
