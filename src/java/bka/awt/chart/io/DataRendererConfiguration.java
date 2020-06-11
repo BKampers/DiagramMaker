@@ -21,5 +21,7 @@ public class DataRendererConfiguration {
     private AreaDrawStyleConfiguration areaDrawStyleConfiguration;
     private PieDrawStyleConfiguration pieDrawStyleConfiguration;
     private String image;
+    private Integer shift;
+    private Boolean autoShift;
 
 }

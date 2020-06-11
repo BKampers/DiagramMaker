@@ -2,30 +2,48 @@
   "locale": "nl",
   "title": "Weersverwachting",
   "width": 550,
-  "top_margin": 50,
-  "bottom_margin": 50,
-  "right_margin": 150,
-  "legend_position": [300, 50],
-  "x_axis_position": "minimum",
-  "x_expand_to_grid": true,
-  "y_window_minimum": 0,
-  "y_window_maximum": 100,
-  "grid": {
-    "x_axis": [ { "axis_color": null, "label_color": "63-63-63", "marker_color": "200-200-200"} ],
-    "y_axis": [ { "axis_color": null, "label_color": "63-63-63", "marker_color": null, "unit": "%" } ]
-
-  },
-  "graph": { 
+  "topMargin": 50,
+  "bottomMargin": 50,
+  "rightMargin": 150,
+  "legendPosition": { "x": 300, "y": 50 },
+  "XExpandToGrid": true,
+  "YWindowMinimum": 0,
+  "YWindowMaximum": 100,
+  "XAxisConfigurations": [
+    {
+      "position": "MINIMUM",
+      "axisStyleConfiguration": {
+        "axisColor": null, 
+        "labelColor": "63-63-63", 
+        "markerColor": "200-200-200"
+      }
+    }
+  ],
+  "YAxisConfigurations": [
+    {
+      "axisStyleConfiguration": {
+        "axisColor": null,
+        "labelColor": "63-63-63",
+        "markerColor": null
+      },
+      "unit": "%"
+    }
+  ],
+  "defaultDataRendererConfiguration": { 
     "type": "bar",
     "width": 15,
-    "auto_shift": true 
+    "autoShift": true 
   },
-  "graphs": {
-      "Kans op zon": {
-      "colors": ["15-63-255"]
+  "dataRendererConfigurations": {
+    "Kans op zon": {
+      "areaDrawStyleConfiguration": {
+        "colors": [ "15-63-255", "26-56-220" ]
+      }
     },
     "Kans op neerslag": {
-       "colors": ["30-128-240"]
+      "areaDrawStyleConfiguration": {
+        "colors": [ "30-128-240", "56-115-209" ]
+      }
     }
   }
 }

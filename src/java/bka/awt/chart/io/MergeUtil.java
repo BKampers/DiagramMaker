@@ -4,7 +4,6 @@
 
 package bka.awt.chart.io;
 
-import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.util.logging.*;
 

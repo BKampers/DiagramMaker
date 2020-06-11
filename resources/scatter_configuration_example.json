@@ -1,13 +1,17 @@
 {
-  "graph": {
+  "defaultDataRendererConfiguration": {
      "type": "scatter",
-     "colors": [ "ff0000", "ffffff", "0000ff" ],
-     "border": "007777"
+     "areaDrawStyleConfiguration": {
+       "colors": [ "ff0000", "ffffff", "0000ff" ],
+       "borderColor": "007777"
+     }
   },
-  "x_expand_to_grid": true,
-  "y_expand_to_grid": true,
-  "grid": { 
-    "x": { "color": "777777", "type": "integer" },
-    "y": { "color": "777777" }
+  "XExpandToGrid": true,
+  "YExpandToGrid": true,
+  "XGridMarkerConfiguration": { "type": "Integer" },
+  "gridConfiguration": { 
+    "gridStyleConfiguration": {
+      "color": "777777"
+    }
   }
 }

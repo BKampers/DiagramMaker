@@ -27,6 +27,8 @@ public class ChartConfiguration {
     private Map<String, RangeConfiguration> windowConfigurations;
     private int leftOffset;
     private int rightOffset;
+    private boolean xExpandToGrid;
+    private boolean yExpandToGrid;
     private List<AxisConfiguration> xAxisConfigurations;
     private List<AxisConfiguration> yAxisConfigurations;
     private GridConfiguration gridConfiguration;

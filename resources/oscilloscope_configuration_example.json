@@ -1,24 +1,41 @@
 {
   "width": 400,
   "height": 400,
-  "left_margin": 0,
-  "right_margin": 0,
-  "top_margin": 0,
-  "bottom_margin": 0,
-  "graph": {
-     "type": "line", "width":2.0,
-     "color": "00ff00"
+  "leftMargin": 0,
+  "rightMargin": 0,
+  "topMargin": 0,
+  "bottomMargin": 0,
+  "defaultDataRendererConfiguration": {
+    "type": "line", 
+    "areaDrawStyleConfiguration": { 
+      "stroke": { "width":2.0 },
+      "color": "00ff00"
+    }
   },
-  "grid": {
-    "x": { "color": "777777", "dash_array": [2,2] },
-    "y": { "color": "777777", "dash_array": [2,2] }, 
-    "backgrounds":[ "000000" ], 
-    "fill_mode": "y",
-    "x_axis": [ 
-      { "axis_color": "00aa00", "marker_color": "00aa00", "label_color": null }
-    ],
-    "y_axis": [
-      { "axis_color": "00aa00", "marker_color": "00aa00", "label_color": null }
-    ]
-  }
+  "gridConfiguration": {
+    "gridStyleConfiguration": {
+      "color": "777777",  
+      "stroke": { "dash": [2,2] },
+      "backgrounds":[ [ "000000" ] ]
+    }
+  },
+  "gridMode": "Y",
+  "XAxisConfigurations": [ 
+    {
+      "axisStyleConfiguration": {
+        "axisColor": "00aa00",
+        "markerColor": "00aa00",
+        "labelColor": null
+      }
+    }
+  ],
+  "YAxisConfigurations": [
+    {
+      "axisStyleConfiguration": {
+        "axisColor": "00aa00",
+        "markerColor": "00aa00",
+        "labelColor": null
+      }
+    }
+  ]
 }
