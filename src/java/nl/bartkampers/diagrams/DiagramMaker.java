@@ -4,16 +4,13 @@
 
 package nl.bartkampers.diagrams;
 
-import bka.awt.*;
 import bka.awt.chart.*;
-import bka.awt.chart.custom.*;
 import bka.awt.chart.io.*;
 import bka.awt.chart.render.*;
 import bka.mail.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.net.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
@@ -78,22 +75,16 @@ public class DiagramMaker {
 
     
     public String getBase64() {
-        exception = null;
-        try {
-            String image = createBase64(createImage());
-            sendMail();
-            return image;
-        }
-        catch (JSONException ex) {
-            log(Level.INFO, "Could not create image", ex);
-            return "";
-        }
+        exceptionMessage = null;
+        String image = createBase64(createImage());
+        sendMail();
+        return image;
     }
 
 
     public String getStatusText() {
-        if (exception != null) {
-            return exception;
+        if (exceptionMessage != null) {
+            return exceptionMessage;
         }
         return String.format("Image size: %d bytes. Rendered in %d ms. Streamed in %d ms.", imageSize, renderingDuration, streamingDuration);
     }
@@ -133,37 +124,30 @@ public class DiagramMaker {
 
 
     public String getException() {
-        return exception;
+        return exceptionMessage;
     }
 
 
-    private BufferedImage createImage() throws JSONException {
+    private BufferedImage createImage() {
         return createImage(BufferedImage.TYPE_INT_ARGB);
     }
 
 
-    private BufferedImage createImage(int type) throws JSONException {
-        Configuration loaded;
-//        try {
-            try {
-               loaded = loadConfiguration(new YamlReader(getConfiguration()));
-            }
-            catch (ChartConfigurationException ex) {
-                getLogger().log(Level.WARNING, "Could not read configuration", ex);
-//                loaded = loadConfiguration();
-                return null;
-            }
-            return createImage(loaded, type);
-//        }
-//        catch (UserDataException ex) {
-//            log(Level.INFO, "Invalid user data", ex);
-//            return null;
-//        }
+    private BufferedImage createImage(int type) {
+        try {
+           return createImage(loadConfiguration(new YamlReader(getConfiguration())), type);
+        }
+        catch (ChartConfigurationException ex) {
+            getLogger().log(Level.WARNING, "Could not read configuration", ex);
+            BufferedImage image = new BufferedImage(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, type);
+            drawException((Graphics2D) image.getGraphics(), ex);
+            return image;
+        }
     }
 
 
     private BufferedImage createImage(Configuration loaded, int type) {
-        BufferedImage image = new BufferedImage((loaded.width != null) ? loaded.width : 500, (loaded.height != null) ? loaded.height : 400, type);
+        BufferedImage image = new BufferedImage((loaded.width != null) ? loaded.width : DEFAULT_IMAGE_WIDTH, (loaded.height != null) ? loaded.height : DEFAULT_IMAGE_HEIGHT, type);
         Graphics2D g2d = image.createGraphics();
         try {
             renderingDuration = 0;
@@ -173,12 +157,17 @@ public class DiagramMaker {
         }
         catch (ChartDataException ex) {
             log(Level.INFO, "Invalid user data", ex);
-            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g2d.setColor(Color.RED);
-            exception = ex.getMessage();
-            g2d.drawString(exception, 0, 200);
+            drawException(g2d, ex);
         }
         return image;
+    }
+
+
+    private void drawException(Graphics2D g2d, Exception exception) {
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setColor(Color.RED);
+        exceptionMessage = exception.getMessage();
+        g2d.drawString(exceptionMessage, 0, 200);
     }
 
     
@@ -255,10 +244,10 @@ public class DiagramMaker {
     private static void populateYamlConfig(YamlConfig config) {
         config.setClassTag("Chart", ChartConfiguration.class);
         config.setClassTag("DataRenderer", DataRendererConfiguration.class);
-        config.setPropertyElementType(ChartConfiguration.class, "XAxisConfigurations", AxisConfiguration.class);
-        config.setPropertyElementType(ChartConfiguration.class, "YAxisConfigurations", AxisConfiguration.class);
-        config.setPropertyElementType(ChartConfiguration.class, "dataRendererConfigurations", DataRendererConfiguration.class);
-        config.setPropertyElementType(ChartConfiguration.class, "windowConfigurations", RangeConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "XAxes", AxisConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "YAxes", AxisConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "graphs", DataRendererConfiguration.class);
+        config.setPropertyElementType(ChartConfiguration.class, "YWindows", RangeConfiguration.class);
     }
 
 
@@ -800,7 +789,7 @@ public class DiagramMaker {
         try {
             return createBytes(createImage(BufferedImage.TYPE_INT_RGB), "jpg");
         }
-        catch (JSONException | IOException ex) {
+        catch (IOException ex) {
             Logger.getLogger(DiagramMaker.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -887,7 +876,7 @@ public class DiagramMaker {
     private void log(Level level, String message) {
         getLogger().log(level, message);
         if (Level.INFO.equals(level)) {
-            exception = message;
+            exceptionMessage = message;
         }
     }
 
@@ -895,7 +884,7 @@ public class DiagramMaker {
     private void log(Level level, String message, Throwable throwable) {
         getLogger().log(level, message, throwable);
         if (Level.INFO.equals(level)) {
-            exception = throwable.getMessage();
+            exceptionMessage = throwable.getMessage();
         }
         if (level.intValue() >= Level.WARNING.intValue()) {
             saveLog(throwable);
@@ -980,7 +969,7 @@ public class DiagramMaker {
     private long renderingDuration;
     private long streamingDuration;
     private int imageSize;
-    private String exception;
+    private String exceptionMessage;
     private boolean figuresModified;
 
     private Logger logger;
@@ -1056,6 +1045,9 @@ public class DiagramMaker {
 
 //    private static final int DEFAULT_X_LABEL_OFFSET = 0;
 //    private static final int DEFAULT_Y_LABEL_OFFSET = -4;
+
+    private static final int DEFAULT_IMAGE_HEIGHT = 400;
+    private static final int DEFAULT_IMAGE_WIDTH = 500;
 
     private static final int MAX_LOG_LENGTH = 20000;
 

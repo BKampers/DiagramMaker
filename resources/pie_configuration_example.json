@@ -6,10 +6,10 @@
   "rightMargin": 100,
   "topMargin": 50,
   "bottomMargin": 50,
-  "defaultDataRendererConfiguration": {
+  "graphDefaults": {
       "type": "pie",
-      "pieDrawStyleConfiguration": {
-        "colorsByKey": {
+      "pieDrawStyle": {
+        "sliceColors": {
           "CDA":    ["0-255-255","14-106-77"],
           "CU":     ["16-139-221","13-30-83"],
           "D66":    ["255-255-255","21-164-48"],
@@ -18,7 +18,7 @@
           "PvdD":   ["24-180-72","12-90-34"],
           "PVV":    ["255-255-255","8-47-96"],
           "SGP":    ["255-239-201","255-70-15"],
-          "SP":     ["252-146-146","221-0-0"],
+          "SP":     ["255-146-146","255-0-0"],
           "VVD":    ["200-200-255","29-29-87"],
           "Overig": ["255-255-255","200-200-200"]
         }

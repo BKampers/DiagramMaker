@@ -1,17 +1,15 @@
 {
-  "defaultDataRendererConfiguration": {
+  "graphDefaults": {
      "type": "scatter",
-     "areaDrawStyleConfiguration": {
+     "graphDrawStyle": {
        "colors": [ "ff0000", "ffffff", "0000ff" ],
        "borderColor": "007777"
      }
   },
   "XExpandToGrid": true,
   "YExpandToGrid": true,
-  "XGridMarkerConfiguration": { "type": "Integer" },
-  "gridConfiguration": { 
-    "gridStyleConfiguration": {
-      "color": "777777"
-    }
+  "XGrid": { "type": "Integer" },
+  "gridStyle": {
+    "color": "777777"
   }
 }

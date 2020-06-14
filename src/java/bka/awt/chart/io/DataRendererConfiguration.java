@@ -18,8 +18,8 @@ public class DataRendererConfiguration {
     private Integer innerRadius;
     private Integer outerRadius;
     private DataRendererConfiguration marker;
-    private AreaDrawStyleConfiguration areaDrawStyleConfiguration;
-    private PieDrawStyleConfiguration pieDrawStyleConfiguration;
+    private AreaDrawStyleConfiguration graphDrawStyle;
+    private PieDrawStyleConfiguration pieDrawStyle;
     private String image;
     private Integer shift;
     private Boolean autoShift;

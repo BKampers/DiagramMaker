@@ -26,7 +26,8 @@ public class ChartRendererBuilder {
     public ChartRenderer buildChartRenderer(ChartConfiguration chartConfiguration) throws ChartConfigurationException {
         ChartRenderer chartRenderer = new ChartRenderer();
         chartRenderer.setLocale(buildLocale(chartConfiguration.getLocale()));
-        chartRenderer.setMargins((chartConfiguration.getLeftMargin() != null) ? chartConfiguration.getLeftMargin() : DEFAULT_LEFT_MARGIN,
+        chartRenderer.setMargins(
+            (chartConfiguration.getLeftMargin() != null) ? chartConfiguration.getLeftMargin() : DEFAULT_LEFT_MARGIN,
             (chartConfiguration.getRightMargin() != null) ? chartConfiguration.getRightMargin() : DEFAULT_RIGHT_MARGIN,
             (chartConfiguration.getTopMargin() != null) ? chartConfiguration.getTopMargin() : DEFAULT_TOP_MARGIN,
             (chartConfiguration.getBottomMargin() != null) ? chartConfiguration.getBottomMargin() : DEFAULT_BOTTOM_MARGIN);
@@ -38,19 +39,19 @@ public class ChartRendererBuilder {
         chartRenderer.setXWindowMaximum(chartConfiguration.getXWindowMaximum());
         chartRenderer.setYWindowMinimum(chartConfiguration.getYWindowMinimum());
         chartRenderer.setYWindowMaximum(chartConfiguration.getYWindowMaximum());
-        if (chartConfiguration.getWindowConfigurations() != null) {
-            chartConfiguration.getWindowConfigurations().forEach((key, range) -> chartRenderer.setYWindow(key, range.getYWindowMinimum(), range.getYWindowMaximum()));
+        if (chartConfiguration.getYWindows() != null) {
+            chartConfiguration.getYWindows().forEach((key, range) -> chartRenderer.setYWindow(key, range.getMinimum(), range.getMaximum()));
         }
         chartRenderer.setOffsets(chartConfiguration.getLeftOffset(), chartConfiguration.getRightOffset());
         chartRenderer.setExpandToGrid(chartConfiguration.isXExpandToGrid(), chartConfiguration.isYExpandToGrid());
-        chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridConfiguration()), chartConfiguration.getGridMode());
-        chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGridMarkerConfiguration(), figures.getXTypes()));
-        chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGridMarkerConfiguration(), figures.getYTypes()));
+        chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridStyle()), chartConfiguration.getGridMode());
+        chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGrid(), figures.getXTypes()));
+        chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGrid(), figures.getYTypes()));
         axisesRequired = false;
         buildDataRenderers(chartConfiguration).forEach((key, renderer) -> chartRenderer.setRenderer(key, renderer));
         if (axisesRequired) {
-            chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxisConfigurations()));
-            chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxisConfigurations()));
+            chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxes()));
+            chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxes()));
         }
         return chartRenderer;
     }
@@ -58,7 +59,7 @@ public class ChartRendererBuilder {
 
     private Map<String, AbstractDataAreaRenderer> buildDataRenderers(ChartConfiguration chartConfiguration) throws ChartConfigurationException {
         Map<String, AbstractDataAreaRenderer> renderers = new LinkedHashMap<>();
-        if (chartConfiguration.getDataRendererConfigurations() != null) {
+        if (chartConfiguration.getGraphs() != null) {
             buildConfiguredDataRenderers(chartConfiguration, renderers);
         }
         else {
@@ -96,9 +97,9 @@ public class ChartRendererBuilder {
 
     private void buildConfiguredDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
         index = 0;
-        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getDataRendererConfigurations().entrySet()) {
+        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getGraphs().entrySet()) {
             AbstractDataAreaRenderer renderer = buildDataRenderer(MergeUtil.merge(
-                chartConfiguration.getDefaultDataRendererConfiguration(),
+                chartConfiguration.getGraphDefaults(),
                 entry.getValue()));
             renderers.put(entry.getKey(), renderer);
             index++;
@@ -109,7 +110,7 @@ public class ChartRendererBuilder {
     private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
         ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
         for (index = 0; index < keys.size(); ++index) {
-            AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getDefaultDataRendererConfiguration());
+            AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getGraphDefaults());
             if (renderer == null) {
                 renderer = defaultDataRenderer(defaultColor());
             }
@@ -151,7 +152,7 @@ public class ChartRendererBuilder {
     private AxisRenderer buildAxisRenderer(AxisConfiguration axisConfiguration) throws ChartConfigurationException {
         DefaultAxisRenderer axisRenderer = new DefaultAxisRenderer(
             (axisConfiguration.getPosition() == null) ? ChartRenderer.AxisPosition.ORIGIN : axisConfiguration.getPosition(),
-            buildAxisStyle(axisConfiguration.getAxisStyleConfiguration()),
+            buildAxisStyle(axisConfiguration.getAxisStyle()),
             axisConfiguration.getKey());
         axisRenderer.setTitle(axisConfiguration.getTitle());
         axisRenderer.setUnit(axisConfiguration.getUnit());
@@ -186,16 +187,16 @@ public class ChartRendererBuilder {
     }
 
 
-    private GridRenderer buildGridRenderer(GridConfiguration gridConfiguration) throws ChartConfigurationException {
-        if (gridConfiguration == null) {
+    private GridRenderer buildGridRenderer(GridStyleConfiguration gridStyleConfiguration) throws ChartConfigurationException {
+        if (gridStyleConfiguration == null) {
             return null;
         }
-        GridRenderer gridRenderer = new DefaultGridRenderer(buildGridStyle(gridConfiguration.getGridStyleConfiguration()));
+        GridRenderer gridRenderer = new DefaultGridRenderer(buildGridStyle(gridStyleConfiguration));
         return gridRenderer;
     }
 
 
-    private Grid buildGrid(GridMarkerConfiguration gridMarkerConfiguration, Map<Object, EnumSet<Figures.DataType>> dataTypes) {
+    private Grid buildGrid(GridConfiguration gridMarkerConfiguration, Map<Object, EnumSet<Figures.DataType>> dataTypes) {
         if (gridMarkerConfiguration != null && gridMarkerConfiguration.getType() != null) {
             switch (gridMarkerConfiguration.getType()) {
                 case "Text":
@@ -274,12 +275,12 @@ public class ChartRendererBuilder {
 
 
     private AbstractDataAreaRenderer buildPieRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
-        return new DefaultPieSectorRenderer(buildPieDrawStyle(dataRendererConfiguration.getPieDrawStyleConfiguration()));
+        return new DefaultPieSectorRenderer(buildPieDrawStyle(dataRendererConfiguration.getPieDrawStyle()));
     }
 
 
     private AbstractDataAreaRenderer buildScatterRenderer(DataRendererConfiguration dataRendererConfiguration) throws ChartConfigurationException {
-        return new ScatterRenderer(buildPointDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()), 3.0f);
+        return new ScatterRenderer(buildPointDrawStyle(dataRendererConfiguration.getGraphDrawStyle()), 3.0f);
     }
 
 
@@ -288,7 +289,7 @@ public class ChartRendererBuilder {
         if (dataRendererConfiguration.getMarker() != null) {
             markerRenderer = buildMarkerRenderer(dataRendererConfiguration.getMarker());
         }
-        return new DefaultLineRenderer(buildLineDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()), markerRenderer);
+        return new DefaultLineRenderer(buildLineDrawStyle(dataRendererConfiguration.getGraphDrawStyle()), markerRenderer);
     }
 
 
@@ -310,7 +311,7 @@ public class ChartRendererBuilder {
         final int width = (dataRendererConfiguration.getWidth() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_BAR_WIDTH;
         BarRenderer renderer = new BarRenderer(
             width,
-            buildBarDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()),
+            buildBarDrawStyle(dataRendererConfiguration.getGraphDrawStyle()),
             dataRendererConfiguration.getBase());
         if (Boolean.TRUE.equals(dataRendererConfiguration.getAutoShift())) {
             renderer.setShift(Math.round((-(figures.getChartData().size() / 2.0f) + index) * width + width / 2.0f));
@@ -326,7 +327,7 @@ public class ChartRendererBuilder {
         return new RectangleDotRenderer(
             (dataRendererConfiguration.getWidth() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_RECTANGLE_WIDTH,
             (dataRendererConfiguration.getHeight() != null) ? dataRendererConfiguration.getHeight() : DEFAULT_RECTANGLE_HEIGHT,
-            buildAreaDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
+            buildAreaDrawStyle(dataRendererConfiguration.getGraphDrawStyle()));
     }
 
 
@@ -334,7 +335,7 @@ public class ChartRendererBuilder {
         return new OvalDotRenderer(
             (dataRendererConfiguration.getWidth() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_SIZE,
             (dataRendererConfiguration.getHeight() != null) ? dataRendererConfiguration.getWidth() : DEFAULT_SIZE,
-            buildAreaDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
+            buildAreaDrawStyle(dataRendererConfiguration.getGraphDrawStyle()));
     }
 
 
@@ -343,7 +344,7 @@ public class ChartRendererBuilder {
             PolygonFactory.createStar((dataRendererConfiguration.getPoints() != null) ? Math.max(dataRendererConfiguration.getPoints(), MIN_STAR_POINTS) : index + 3,
                 (dataRendererConfiguration.getInnerRadius() != null) ? dataRendererConfiguration.getInnerRadius() : DEFAULT_INNER_RADIUS,
                 (dataRendererConfiguration.getOuterRadius() != null) ? dataRendererConfiguration.getOuterRadius() : DEFAULT_OUTER_RADIUS),
-            buildAreaDrawStyle(dataRendererConfiguration.getAreaDrawStyleConfiguration()));
+            buildAreaDrawStyle(dataRendererConfiguration.getGraphDrawStyle()));
     }
 
 
@@ -377,8 +378,8 @@ public class ChartRendererBuilder {
         if (pieDrawStyleConfiguration == null) {
             return PieDrawStyle.create(defaults);
         }
-        if (pieDrawStyleConfiguration.getColorsByKey() != null) {
-            return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getColorsByKey(), defaults));
+        if (pieDrawStyleConfiguration.getSliceColors() != null) {
+            return PieDrawStyle.create(buildColors(pieDrawStyleConfiguration.getSliceColors(), defaults));
         }
         return PieDrawStyle.create(awtBuilder.buildColors(pieDrawStyleConfiguration.getColors()));
     }

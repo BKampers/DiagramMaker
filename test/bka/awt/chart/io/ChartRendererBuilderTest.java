@@ -8,9 +8,7 @@ import bka.awt.chart.render.*;
 import java.io.*;
 import java.util.*;
 import net.sourceforge.yamlbeans.*;
-import nl.bartkampers.diagrams.*;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 
 public class ChartRendererBuilderTest {
@@ -23,22 +21,20 @@ public class ChartRendererBuilderTest {
        GridStyleConfiguration gridStyleConfiguration = new GridStyleConfiguration();
        gridStyleConfiguration.setStroke(strokeConfiguration);
        gridStyleConfiguration.setColor("777777");
-       GridConfiguration gridConfiguration = new GridConfiguration();
-       gridConfiguration.setGridStyleConfiguration(gridStyleConfiguration);
        ChartConfiguration chartConfiguration = new ChartConfiguration();
-       chartConfiguration.setGridConfiguration(gridConfiguration);
+       chartConfiguration.setGridStyle(gridStyleConfiguration);
        chartConfiguration.setGridMode(ChartRenderer.GridMode.NONE);
-       GridMarkerConfiguration xGrid = new GridMarkerConfiguration();
+       GridConfiguration xGrid = new GridConfiguration();
        xGrid.setType("Integer");
-       chartConfiguration.setXGridMarkerConfiguration(xGrid);
+       chartConfiguration.setXGrid(xGrid);
        AxisConfiguration axis = new AxisConfiguration();
        axis.setPosition(ChartRenderer.AxisPosition.ORIGIN);
        axis.setTitle("t");
        axis.setUnit("s");
-       ArrayList<AxisConfiguration> xAxis = new ArrayList<>();
-       xAxis.add(axis);
-       chartConfiguration.setXAxisConfigurations(xAxis);
-       chartConfiguration.setYAxisConfigurations(Collections.emptyList());
+       ArrayList<AxisConfiguration> xAxes = new ArrayList<>();
+       xAxes.add(axis);
+       chartConfiguration.setXAxes(xAxes);
+       chartConfiguration.setYAxes(Collections.emptyList());
        PointConfiguration legendPosition = new PointConfiguration();
        legendPosition.setX(1);
        legendPosition.setY(23);
@@ -46,7 +42,7 @@ public class ChartRendererBuilderTest {
        Map<String, DataRendererConfiguration> dataRendererConfigurations = new HashMap<>();
        dataRendererConfigurations.put("bar-graph", new DataRendererConfiguration());
        dataRendererConfigurations.get("bar-graph").setType("bar");
-       chartConfiguration.setDataRendererConfigurations(dataRendererConfigurations);
+       chartConfiguration.setGraphs(dataRendererConfigurations);
 //       ChartRendererBuilder builder = new ChartRendererBuilder(new Figures(), Collections.emptyMap());
        YamlWriter writer = new YamlWriter(new FileWriter("test/resources/renderer.yml"));
        writer.getConfig().setClassTag("Chart", ChartConfiguration.class);

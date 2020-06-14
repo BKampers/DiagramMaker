@@ -5,33 +5,31 @@
   "rightMargin": 0,
   "topMargin": 0,
   "bottomMargin": 0,
-  "defaultDataRendererConfiguration": {
+  "graphDefaults": {
     "type": "line", 
-    "areaDrawStyleConfiguration": { 
+    "graphDrawStyle": { 
       "stroke": { "width":2.0 },
       "color": "00ff00"
     }
   },
-  "gridConfiguration": {
-    "gridStyleConfiguration": {
-      "color": "777777",  
-      "stroke": { "dash": [2,2] },
-      "backgrounds":[ [ "000000" ] ]
-    }
+  "gridStyle": {
+    "color": "777777",  
+    "stroke": { "dash": [2,2] },
+    "backgrounds":[ [ "000000" ] ]   
   },
   "gridMode": "Y",
-  "XAxisConfigurations": [ 
+  "XAxes": [ 
     {
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "axisColor": "00aa00",
         "markerColor": "00aa00",
         "labelColor": null
       }
     }
   ],
-  "YAxisConfigurations": [
+  "YAxes": [
     {
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "axisColor": "00aa00",
         "markerColor": "00aa00",
         "labelColor": null

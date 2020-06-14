@@ -3,19 +3,19 @@
   "leftMargin": 55,
   "rightMargin": 55,
   "legendPosition": { "x": 350, "y": 0 },
-  "windowConfigurations": {
-    "Power": { "YWindowMinimum": 0, "YWindowMaximum": 120 },
-    "Torque": { "YWindowMinimum": 80, "YWindowMaximum": 500 }    
+  "YWindows": {
+    "Power": { "minimum": 0, "maximum": 120 },
+    "Torque": { "minimum": 80, "maximum": 500 }    
   },
-  "defaultDataRendererConfiguration": {
+  "graphDefaults": {
     "type": "line",
-    "areaDrawStyleConfiguration": { "stroke": { "width": 3 } }
+    "graphDrawStyle": { "stroke": { "width": 3 } }
   },
-  "dataRendererConfigurations": {
-    "Power": { "areaDrawStyleConfiguration": { "color": "255-0-0" } },
-    "Torque": { "areaDrawStyleConfiguration": { "color": "0-0-255" } }
+  "graphs": {
+    "Power": { "graphDrawStyle": { "color": "255-0-0" } },
+    "Torque": { "graphDrawStyle": { "color": "0-0-255" } }
   },
-  "YAxisConfigurations": [
+  "YAxes": [
     {
       "position": "MINIMUM", 
       "key": "Power",
@@ -27,7 +27,7 @@
       "key": "Torque",
       "title": "Torque",
       "unit": "Nm",
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "labelOffset": 30
       }
     }

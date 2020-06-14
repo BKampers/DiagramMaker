@@ -1,38 +1,38 @@
 !Chart
-XAxisConfigurations: 
--  axisStyleConfiguration: 
+XAxes: 
+-  axisStyle: 
       axisColor: null
       labelColor: 777777
       markerColor: null
    position: MAXIMUM
-YAxisConfigurations: 
--  axisStyleConfiguration: 
+YAxes: 
+-  axisStyle: 
       axisColor: null
       labelColor: 777777
       markerColor: null
 YWindowMaximum: 0.0
 YWindowMinimum: -90.0
-dataRendererConfigurations: 
+graphs: 
    Daily mean: 
-      areaDrawStyleConfiguration: 
+      graphDrawStyle: 
          borderColor: 0-0-255
          color: 30-128-240
       base: 0.0
       type: bar
       width: 25
    Average low: 
-      areaDrawStyleConfiguration: 
+      graphDrawStyle: 
          image: http://clipart-library.com/image_gallery/33853.png
       height: 30
       width: 30
    Record high: 
-      areaDrawStyleConfiguration: 
+      graphDrawStyle: 
          color: 15-63-255
       base: 0.0
       type: bar
       width: 11
    Record low: 
-      areaDrawStyleConfiguration: 
+      graphDrawStyle: 
          borderColor: 0-0-178
          colors: 
          - 0-0-255
@@ -40,7 +40,7 @@ dataRendererConfigurations:
       points: 8
       type: star
    Average high: 
-      areaDrawStyleConfiguration: 
+      graphDrawStyle: 
          borderColor: 0-0-255
          color: 190-190-255
       height: 5

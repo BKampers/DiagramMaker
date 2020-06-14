@@ -9,19 +9,18 @@
   "XExpandToGrid": true,
   "YWindowMinimum": 0,
   "YWindowMaximum": 100,
-  "XAxisConfigurations": [
+  "XAxes": [
     {
-      "position": "MINIMUM",
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "axisColor": null, 
         "labelColor": "63-63-63", 
         "markerColor": "200-200-200"
       }
     }
   ],
-  "YAxisConfigurations": [
+  "YAxes": [
     {
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "axisColor": null,
         "labelColor": "63-63-63",
         "markerColor": null
@@ -29,19 +28,19 @@
       "unit": "%"
     }
   ],
-  "defaultDataRendererConfiguration": { 
+  "graphDefaults": { 
     "type": "bar",
     "width": 15,
     "autoShift": true 
   },
-  "dataRendererConfigurations": {
+  "graphs": {
     "Kans op zon": {
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "colors": [ "15-63-255", "26-56-220" ]
       }
     },
     "Kans op neerslag": {
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "colors": [ "30-128-240", "56-115-209" ]
       }
     }

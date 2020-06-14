@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 public class RangeConfiguration {
 
-    private Integer yWindowMinimum;
-    private Integer yWindowMaximum;
+    private Integer minimum;
+    private Integer maximum;
 
 }

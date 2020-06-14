@@ -24,19 +24,19 @@ public class ChartConfiguration {
     private Double xWindowMaximum;
     private Double yWindowMinimum;
     private Double yWindowMaximum;
-    private Map<String, RangeConfiguration> windowConfigurations;
+    private Map<String, RangeConfiguration> yWindows;
     private int leftOffset;
     private int rightOffset;
     private boolean xExpandToGrid;
     private boolean yExpandToGrid;
-    private List<AxisConfiguration> xAxisConfigurations;
-    private List<AxisConfiguration> yAxisConfigurations;
-    private GridConfiguration gridConfiguration;
-    private GridMarkerConfiguration xGridMarkerConfiguration;
-    private GridMarkerConfiguration yGridMarkerConfiguration;
+    private List<AxisConfiguration> xAxes;
+    private List<AxisConfiguration> yAxes;
+    private GridStyleConfiguration gridStyle;
+    private GridConfiguration xGrid;
+    private GridConfiguration yGrid;
     private GridMode gridMode;
-    private DataRendererConfiguration defaultDataRendererConfiguration;
-    private Map<String, DataRendererConfiguration> dataRendererConfigurations;
+    private DataRendererConfiguration graphDefaults;
+    private Map<String, DataRendererConfiguration> graphs;
     private List<String> stack;
 
 }

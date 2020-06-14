@@ -6,33 +6,31 @@
   "rightMargin": 100,
   "topMargin": 50,
   "bottomMargin": 50,
-  "defaultDataRendererConfiguration": {
+  "graphDefaults": {
      "type": "bar",
      "width": 100
   },
-  "dataRendererConfigurations": {
-     "CDA":  { "areaDrawStyleConfiguration": { "colors": ["0-255-255","14-106-77"] } },
-     "CU":   { "areaDrawStyleConfiguration": { "colors": ["16-139-221","13-30-83"] } },
-     "D66":  { "areaDrawStyleConfiguration": { "colors": ["255-255-255","21-164-48"]} },
-     "GL":   { "areaDrawStyleConfiguration": { "colors": ["252-189-189","48-156-40"] } },
-     "PvdA": { "areaDrawStyleConfiguration": { "colors": ["252-189-189","213-0-21"] } },
-     "PvdD": { "areaDrawStyleConfiguration": { "colors": ["24-180-72","12-90-34"] } },
-     "PVV":  { "areaDrawStyleConfiguration": { "colors": ["255-255-255","8-47-96"] } },
-     "SGP":  { "areaDrawStyleConfiguration": { "colors": ["255-239-201","255-70-15"] } },
-     "SP":   { "areaDrawStyleConfiguration": { "colors": ["252-146-146","221-0-0"] } },
-     "VVD":  { "areaDrawStyleConfiguration": { "colors": ["200-200-255","29-29-87"] } } ,
-     "Overig": { "areaDrawStyleConfiguration": { "colors": ["255-255-255","200-200-200"] } }
+  "graphs": {
+     "CDA":    { "graphDrawStyle": { "colors": ["0-255-255","14-106-77"] } },
+     "CU":     { "graphDrawStyle": { "colors": ["16-139-221","13-30-83"] } },
+     "D66":    { "graphDrawStyle": { "colors": ["255-255-255","21-164-48"]} },
+     "GL":     { "graphDrawStyle": { "colors": ["252-189-189","48-156-40"] } },
+     "PvdA":   { "graphDrawStyle": { "colors": ["252-189-189","213-0-21"] } },
+     "PvdD":   { "graphDrawStyle": { "colors": ["24-180-72","12-90-34"] } },
+     "PVV":    { "graphDrawStyle": { "colors": ["255-255-255","8-47-96"] } },
+     "SGP":    { "graphDrawStyle": { "colors": ["255-239-201","255-70-15"] } },
+     "SP":     { "graphDrawStyle": { "colors": ["255-146-146","255-0-0"] } },
+     "VVD":    { "graphDrawStyle": { "colors": ["200-200-255","29-29-87"] } } ,
+     "Overig": { "graphDrawStyle": { "colors": ["255-255-255","200-200-200"] } }
   },
   "stack": [ "CDA", "CU", "D66", "GL", "PvdA", "PvdD", "PVV", "SGP", "SP", "VVD", "Overig" ],
   "YWindowMinimum": 0,
-  "gridConfiguration": {
-    "gridStyleConfiguration": {
-        "backgrounds": [ [ "ffffff" ], [ "eeeeee" ] ]
-    }
+  "gridStyle": {
+      "backgrounds": [ [ "ffffff" ], [ "eeeeee" ] ]
   },
   "gridMode": "Y",
-  "XAxisConfigurations": [ { "axisStyleConfiguration": { "axisColor": "777777", "markerColor": null } } ],
-  "YAxisConfigurations": [ { "axisStyleConfiguration": { "axisColor": null, "markerColor": null }, "unit": "%" } ],
+  "XAxes": [ { "axisStyle": { "axisColor": "777777", "markerColor": null } } ],
+  "YAxes": [ { "axisStyle": { "axisColor": null, "markerColor": null }, "unit": "%" } ],
   "leftOffset": 90,
   "rightOffset": 90,
   "locale": "nl",

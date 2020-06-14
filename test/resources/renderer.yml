@@ -1,23 +1,23 @@
 !Chart
-XAxisConfigurations: 
--  position: ORIGIN
+XAxes: 
+- !Axis
+   position: ORIGIN
    title: t
    unit: s
-XGridMarkerConfiguration: 
+XGrid: 
    type: Integer
-YAxisConfigurations: []
-dataRendererConfigurations: 
+YAxes: !java.util.Collections$EmptyList []
+graphs: 
    bar-graph: !bka.awt.chart.io.DataRendererConfiguration
       type: bar
-gridConfiguration: 
-   gridStyleConfiguration: 
-      color: 777777
-      stroke: 
-         dash: 
-         - 0.75
-         - 0.25
-         width: 1.0
 gridMode: NONE
+gridStyle: 
+   color: 777777
+   stroke: 
+      dash: 
+      - 0.75
+      - 0.25
+      width: 1.0
 legendPosition: 
    x: 1
    y: 23

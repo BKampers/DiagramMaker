@@ -14,6 +14,6 @@ public class AxisConfiguration {
     private ChartRenderer.AxisPosition position;
     private String title;
     private String unit;
-    private AxisStyleConfiguration axisStyleConfiguration;
+    private AxisStyleConfiguration axisStyle;
 
 }

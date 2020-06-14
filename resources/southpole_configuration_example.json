@@ -8,31 +8,31 @@
   "YWindowMaximum": 0,
   "leftOffset": 30,
   "rightOffset": 30,
-  "YAxisConfigurations": [ 
+  "YAxes": [ 
     {
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "labelColor": "777777",
         "axisColor": null,
         "markerColor": null
       }
     }
   ],
-  "XAxisConfigurations": [ 
+  "XAxes": [ 
     {
       "position": "MAXIMUM",
-      "axisStyleConfiguration": {
+      "axisStyle": {
         "labelColor": "777777",
         "axisColor": null,
         "markerColor": null
       }
     }
   ],
-  "dataRendererConfigurations": {
+  "graphs": {
     "Record high": {
       "type": "bar",
       "base": 0,
       "width": 11,
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "color": "15-63-255"
       }
     },
@@ -41,7 +41,7 @@
       "type": "rectangle",
       "width": 25,
       "height": 5,
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "borderColor": "0-0-255",
         "color": "190-190-255"
       }
@@ -50,7 +50,7 @@
       "type": "bar",
       "base": 0,
       "width": 25,
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "color": "30-128-240",
         "borderColor": "0-0-255"
       }
@@ -58,14 +58,14 @@
     "Average low": {
       "width": 30,
       "height": 30,
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "image": "http://clipart-library.com/image_gallery/33853.png"
       }
     },
     "Record low": {
       "type": "star",
       "points": 8,
-      "areaDrawStyleConfiguration": {
+      "graphDrawStyle": {
         "colors": [ "0-0-255", "255-255-255" ],
         "borderColor": "0-0-178"
       }
