@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 public class PointConfiguration {
 
-    private int x;
-    private int y;
+    int x;
+    int y;
 
 }

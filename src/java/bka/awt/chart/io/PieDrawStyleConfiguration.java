@@ -10,7 +10,7 @@ import lombok.*;
 @Data
 public class PieDrawStyleConfiguration {
 
-    private Map<String, List<String>> sliceColors;
-    private String[][] colors;
+    Map<String, List<String>> sliceColors;
+    String[][] colors;
 
 }

@@ -10,18 +10,18 @@ import lombok.*;
 public class DataRendererConfiguration {
 
 
-    private String type;
-    private Double base;
-    private Integer width;
-    private Integer height;
-    private Integer points;
-    private Integer innerRadius;
-    private Integer outerRadius;
-    private DataRendererConfiguration marker;
-    private AreaDrawStyleConfiguration graphDrawStyle;
-    private PieDrawStyleConfiguration pieDrawStyle;
-    private String image;
-    private Integer shift;
-    private Boolean autoShift;
+    String type;
+    Double base;
+    Integer width;
+    Integer height;
+    Integer points;
+    Integer innerRadius;
+    Integer outerRadius;
+    DataRendererConfiguration marker;
+    AreaDrawStyleConfiguration graphDrawStyle;
+    PieDrawStyleConfiguration pieDrawStyle;
+    String image;
+    Integer shift;
+    Boolean autoShift;
 
 }

@@ -48,7 +48,6 @@ class MergeUtil {
 
     private static <T> void mergeField(Field field, T merged, T base, T additional) {
         try {
-            field.setAccessible(true);
             if (isConfiguration(field.getType())) {
                 field.set(merged, merge(field.get(base), field.get(additional)));
             }

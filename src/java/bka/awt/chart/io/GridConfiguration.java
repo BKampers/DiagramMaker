@@ -9,6 +9,6 @@ import lombok.*;
 @Data
 public class GridConfiguration {
 
-    private String type;
+    String type;
 
 }

@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 public class StrokeConfiguration {
 
-    private Float width;
-    private float[] dash;
+    Float width;
+    float[] dash;
 
 }

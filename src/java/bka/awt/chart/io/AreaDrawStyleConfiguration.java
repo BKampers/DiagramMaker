@@ -10,16 +10,16 @@ import lombok.*;
 public class AreaDrawStyleConfiguration {
 
 
-    private String image;
-    private String[] colors;
-    private String color;
-    private String borderColor;
-    private String centerColor;
-    private String edgeColor;
-    private String topAreaColor;
-    private String bottomAreaColor;
-    private StrokeConfiguration stroke;
-    private String font;
-    private AreaDrawStyleConfiguration markerDrawStyle;
+    String image;
+    String[] colors;
+    String color;
+    String borderColor;
+    String centerColor;
+    String edgeColor;
+    String topAreaColor;
+    String bottomAreaColor;
+    StrokeConfiguration stroke;
+    String font;
+    AreaDrawStyleConfiguration markerDrawStyle;
 
 }
