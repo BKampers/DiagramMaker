@@ -30,7 +30,7 @@ public class DiagramMaker {
             return readString(configuration);
         }
         if (configuration == null) {
-            configuration = readString("southpole_configuration_example.json");
+            configuration = readString("southpole_configuration_example.yml");
         }
         return configuration;
     }

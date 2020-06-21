@@ -46,12 +46,12 @@
                 <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
                 <table border="0">
                     <tr>
-                        <td>Configuration</td>
                         <td>Figures</td>
+                        <td>Configuration</td>
                     </tr>
                     <tr>
-                        <td valign="top"><textarea style="font-family:Courier" name="configuration" cols="50" rows="10" readonly><%=configuration%></textarea></td>
                         <td valign="top"><textarea style="font-family:Courier" cols="50" rows="10" readonly><%=figures%></textarea></td>
+                        <td valign="top"><textarea style="font-family:Courier" name="configuration" cols="50" rows="10" readonly><%=configuration%></textarea></td>
                     </tr>
                 </table>
                 <hr/>    

@@ -116,11 +116,6 @@ public final class Figures {
     }
 
 
-    public static void main(String[] args) {
-        System.out.println(getDate("1-12"));
-    }
-
-
     private static Pattern datePattern() {
         return Pattern.compile(
             namedDecimalGroup(YEAR) +
@@ -167,8 +162,8 @@ public final class Figures {
 
 
     private static String thousandths(String units) {
-        if (units == null) {
-            return null;
+        if (units == null || units.length() >= THOUSANDTHS_LENGTH) {
+            return units;
         }
         StringBuilder thousandths = new StringBuilder(units);
         while (thousandths.length() < 3) {
@@ -252,5 +247,7 @@ public final class Figures {
     private static final String MINUTE = "minute";
     private static final String SECOND = "second";
     private static final String MILLI = "milli";
+
+    private static final int THOUSANDTHS_LENGTH = 3;
 
 }
