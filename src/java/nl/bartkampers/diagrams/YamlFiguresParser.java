@@ -29,10 +29,18 @@ public class YamlFiguresParser {
         Figures figures = new Figures();
         for (Map.Entry<Object, List<Map>> entry : root.entrySet()) {
             for (Map dataPoint : entry.getValue()) {
-                figures.add(entry.getKey(), Objects.toString(dataPoint.get("x")), Objects.toString(dataPoint.get("y")));
+                figures.add(entry.getKey(), get(dataPoint, "x"), get(dataPoint, "y"));
             }
         }
         return figures;
+    }
+
+
+    private static String get(Map map, String key) throws UserDataException {
+        if (! map.containsKey(key)) {
+            throw new UserDataException("Missing: " + key);
+        }
+        return map.get(key).toString();
     }
 
 }

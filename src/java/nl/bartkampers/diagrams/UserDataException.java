@@ -5,7 +5,7 @@
 package nl.bartkampers.diagrams;
 
 
-class UserDataException extends Exception{
+class UserDataException extends Exception {
 
 
     UserDataException(String message) {

@@ -36,7 +36,7 @@ public final class Figures {
             return qualifiedNumber(key, new BigDecimal(string), DataType.NUMBER, types);
         }
         catch (NumberFormatException ex) {
-            throw new UserDataException(ex);
+            throw new UserDataException("Invalid number: " + string, ex);
         }
     }
 
