@@ -17,9 +17,8 @@ import nl.bartkampers.diagrams.*;
 public class ChartRendererBuilder {
 
 
-    public ChartRendererBuilder(Figures figures, Map<Number, String> labeledNumbers) {
+    public ChartRendererBuilder(Figures figures) {
         this.figures = figures;
-        this.labeledNumbers = new HashMap<>(labeledNumbers);
     }
 
 
@@ -47,9 +46,9 @@ public class ChartRendererBuilder {
         chartRenderer.setGridRenderer(buildGridRenderer(chartConfiguration.getGridStyle()), chartConfiguration.getGridMode());
         chartRenderer.setXGrid(buildGrid(chartConfiguration.getXGrid(), figures.getXTypes()));
         chartRenderer.setYGrid(buildGrid(chartConfiguration.getYGrid(), figures.getYTypes()));
-        axisesRequired = false;
+        axesRequired = false;
         buildDataRenderers(chartConfiguration).forEach((key, renderer) -> chartRenderer.setRenderer(key, renderer));
-        if (axisesRequired) {
+        if (axesRequired) {
             chartRenderer.setXAxisRenderers(buildAxisRenderers(chartConfiguration.getXAxes()));
             chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxes()));
         }
@@ -67,6 +66,30 @@ public class ChartRendererBuilder {
         }
         stackRenderers(chartConfiguration.getStack(), renderers);
         return renderers;
+    }
+
+
+    private void buildConfiguredDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
+        index = 0;
+        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getGraphs().entrySet()) {
+            AbstractDataAreaRenderer renderer = buildDataRenderer(MergeUtil.merge(
+                chartConfiguration.getGraphDefaults(),
+                entry.getValue()));
+            renderers.put(entry.getKey(), renderer);
+            index++;
+        }
+    }
+
+
+    private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
+        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
+        for (index = 0; index < keys.size(); ++index) {
+            AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getGraphDefaults());
+            if (renderer == null) {
+                renderer = defaultDataRenderer(defaultColor());
+            }
+            renderers.put(keys.get(index), renderer);
+        }
     }
 
 
@@ -91,30 +114,6 @@ public class ChartRendererBuilder {
                 }
                 stackBase = renderer;
             }
-        }
-    }
-
-
-    private void buildConfiguredDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
-        index = 0;
-        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getGraphs().entrySet()) {
-            AbstractDataAreaRenderer renderer = buildDataRenderer(MergeUtil.merge(
-                chartConfiguration.getGraphDefaults(),
-                entry.getValue()));
-            renderers.put(entry.getKey(), renderer);
-            index++;
-        }
-    }
-
-
-    private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
-        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
-        for (index = 0; index < keys.size(); ++index) {
-            AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getGraphDefaults());
-            if (renderer == null) {
-                renderer = defaultDataRenderer(defaultColor());
-            }
-            renderers.put(keys.get(index), renderer);
         }
     }
 
@@ -200,19 +199,19 @@ public class ChartRendererBuilder {
         if (gridMarkerConfiguration != null && gridMarkerConfiguration.getType() != null) {
             switch (gridMarkerConfiguration.getType()) {
                 case "Text":
-                    return new MapGrid(labeledNumbers);
+                    return new MapGrid(figures.getLabels());
                 case "Integer":
                     return new IntegerGrid();
             }
         }
-        return gridType(figures.typeSet(dataTypes));
+        return buildGrid(figures.typeSet(dataTypes));
     }
 
 
-    private Grid gridType(EnumSet<Figures.DataType> types) {
+    private Grid buildGrid(EnumSet<Figures.DataType> types) {
         switch (getMajorDataType(types)) {
             case TEXT:
-                return new MapGrid(labeledNumbers);
+                return new MapGrid(figures.getLabels() );
             case DATE:
                 return new CalendarGrid();
             case NUMBER:
@@ -259,17 +258,17 @@ public class ChartRendererBuilder {
                 case "pie":
                     return buildPieRenderer(dataRendererConfiguration);
                 case "scatter":
-                    axisesRequired = true;
+                    axesRequired = true;
                     return buildScatterRenderer(dataRendererConfiguration);
                 case "line":
-                    axisesRequired = true;
+                    axesRequired = true;
                     return buildLineRenderer(dataRendererConfiguration);
                 case "bar":
-                    axisesRequired = true;
+                    axesRequired = true;
                     return buildBarRenderer(dataRendererConfiguration);
             }
         }
-        axisesRequired = true;
+        axesRequired = true;
         return buildMarkerRenderer(dataRendererConfiguration);
     }
 
@@ -493,11 +492,10 @@ public class ChartRendererBuilder {
 
 
     private int index;
-    private boolean axisesRequired;
+    private boolean axesRequired;
 
     private final Figures figures;
-    private final Map<Number, String> labeledNumbers;
-
+   
     private final AwtBuilder awtBuilder = new AwtBuilder();
 
     private static final int DEFAULT_BOTTOM_MARGIN = 25;

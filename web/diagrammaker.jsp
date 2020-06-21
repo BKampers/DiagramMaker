@@ -48,7 +48,7 @@
             <form method="post" action="<%=request.getContextPath()+request.getServletPath()%>">
                 <div style="display: table-row;">
                     <div style="display: table-cell;">
-                        Figures (JSON or CSV):<br/> 
+                        Figures (Yaml or CSV):<br/> 
                         <textarea style="font-family:Courier" name="figures" cols="85" rows="30"><%=diagramMaker.getFigures()%></textarea><br/>
                     </div>
                     <div style="display: table-cell;">
