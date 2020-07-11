@@ -209,7 +209,7 @@ public class DiagramMaker {
         if (chart == null) {
             chart = new ChartConfiguration();
         }
-        else {
+        else if (atLocalHost()) {
             storeYaml(chart);
         }
         return chart;
@@ -226,7 +226,7 @@ public class DiagramMaker {
                 writer.close();
             }
             catch (IOException | YamlException ex) {
-                Logger.getLogger(DiagramMaker.class.getName()).log(Level.FINE, "Error writing Yaml", ex);
+                log(Level.FINE, "Error writing Yaml", ex);
             }
         }
     }
@@ -269,7 +269,7 @@ public class DiagramMaker {
             return createBytes(createImage(BufferedImage.TYPE_INT_RGB), "jpg");
         }
         catch (IOException ex) {
-            Logger.getLogger(DiagramMaker.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger().log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -316,8 +316,6 @@ public class DiagramMaker {
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(getPath(CONFIG_DIRECTORY, "mail.properties").toFile()));
-            properties.put("mail.smtp.user", "test@bartkampers.nl");
-            properties.put("mail.smtp.password", "1@pril");
         }
         catch (IOException ex) {
             log(Level.WARNING, "Could not load mail properties", ex);
