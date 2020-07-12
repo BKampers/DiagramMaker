@@ -19,6 +19,7 @@
         <h1>Java Diagram Renderer</h1>
         <%
             diagramMaker.setRequest(request);
+            diagramMaker.setSession(session);
             String source = request.getParameter("source");
             if ("form".equals(source) || "example".equals(source)) {
                 diagramMaker.setSource(source);

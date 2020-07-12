@@ -72,7 +72,12 @@ public class DiagramMaker {
         this.request = request;
     }
 
-    
+
+    public void setSession(HttpSession session) {
+        this.session = session;
+    }
+
+
     public String getBase64() {
         exceptionMessage = null;
         String image = createBase64(createImage());
@@ -425,7 +430,7 @@ public class DiagramMaker {
 
 
     private String getRealPath(String name) {
-        return request.getSession(false).getServletContext().getRealPath(name);
+        return session.getServletContext().getRealPath(name);
     }
 
     
@@ -449,6 +454,7 @@ public class DiagramMaker {
     private String source;
 
     private HttpServletRequest request;
+    private HttpSession session;
 
     private long renderingDuration;
     private long streamingDuration;

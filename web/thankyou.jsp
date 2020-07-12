@@ -6,6 +6,8 @@
 <jsp:useBean id="diagramMaker" class="nl.bartkampers.diagrams.DiagramMaker" scope="session" />
 
 <%
+    diagramMaker.setRequest(request);
+    diagramMaker.setSession(session);
     diagramMaker.sendMail(request.getParameter("name"), request.getParameter("address"), request.getParameter("message"));
 %>
 
