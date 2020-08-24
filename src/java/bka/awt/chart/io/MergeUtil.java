@@ -38,10 +38,10 @@ class MergeUtil {
 
     private static <T> T newInstance(Class type) {
         try {
-            return (T) type.newInstance();
+            return (T) type.getDeclaredConstructor().newInstance();
         }
-        catch (InstantiationException | IllegalAccessException ex) {
-            throw new IllegalArgumentException("Default constructor not accecssible for class " + type, ex);
+        catch (ReflectiveOperationException ex) {
+            throw new IllegalArgumentException("Instantiation of class " + type + " failed", ex);
         }
     }
 

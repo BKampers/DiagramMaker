@@ -26,10 +26,10 @@ public class ChartRendererBuilder {
         ChartRenderer chartRenderer = new ChartRenderer();
         chartRenderer.setLocale(buildLocale(chartConfiguration.getLocale()));
         chartRenderer.setMargins(
-            (chartConfiguration.getLeftMargin() != null) ? chartConfiguration.getLeftMargin() : DEFAULT_LEFT_MARGIN,
-            (chartConfiguration.getRightMargin() != null) ? chartConfiguration.getRightMargin() : DEFAULT_RIGHT_MARGIN,
-            (chartConfiguration.getTopMargin() != null) ? chartConfiguration.getTopMargin() : DEFAULT_TOP_MARGIN,
-            (chartConfiguration.getBottomMargin() != null) ? chartConfiguration.getBottomMargin() : DEFAULT_BOTTOM_MARGIN);
+            nonNullInt(chartConfiguration.getLeftMargin(), DEFAULT_LEFT_MARGIN),
+            nonNullInt(chartConfiguration.getRightMargin(), DEFAULT_RIGHT_MARGIN),
+            nonNullInt(chartConfiguration.getTopMargin(), DEFAULT_TOP_MARGIN),
+            nonNullInt(chartConfiguration.getBottomMargin(), DEFAULT_BOTTOM_MARGIN));
         chartRenderer.setTitle(chartConfiguration.getTitle());
         if (chartConfiguration.getLegendPosition() != null) {
             chartRenderer.setLegendRenderer(new DefaultLegendRenderer(chartConfiguration.getLegendPosition().getX(), chartConfiguration.getLegendPosition().getY()));
@@ -53,6 +53,11 @@ public class ChartRendererBuilder {
             chartRenderer.setYAxisRenderers(buildAxisRenderers(chartConfiguration.getYAxes()));
         }
         return chartRenderer;
+    }
+
+
+    private static int nonNullInt(Integer value, int defaultValue) {
+        return (value != null) ? value : defaultValue;
     }
 
 
