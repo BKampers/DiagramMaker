@@ -9,29 +9,19 @@
   "XExpandToGrid": true,
   "YWindowMinimum": 0,
   "YWindowMaximum": 100,
-  "XAxes": [
-    {
-      "axisStyle": {
-        "axisColor": null, 
-        "labelColor": "63-63-63", 
-        "markerColor": "200-200-200"
-      }
-    }
-  ],
-  "YAxes": [
-    {
-      "axisStyle": {
-        "axisColor": null,
-        "labelColor": "63-63-63",
-        "markerColor": null
-      },
+  "axisStyleDefaults": {
+      "axisColor": null, 
+      "labelColor": "63-63-63", 
+      "markerColor": "200-200-200",
+      "unitColor": "0-0-0"
+  },
+  "YAxes": [ {
       "unit": "%"
     }
   ],
   "graphDefaults": { 
     "type": "bar",
-    "width": 15,
-    "autoShift": true 
+    "width": 15
   },
   "graphs": {
     "Kans op zon": {

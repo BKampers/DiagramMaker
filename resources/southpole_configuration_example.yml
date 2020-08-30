@@ -1,14 +1,13 @@
+axisStyleDefaults:
+   axisColor: null
+   labelColor: 777777
+   markerColor: null
 XAxes: 
 -  axisStyle: 
-      axisColor: null
-      labelColor: 777777
-      markerColor: null
    position: MAXIMUM
 YAxes: 
 -  axisStyle: 
-      axisColor: null
-      labelColor: 777777
-      markerColor: null
+   position: MINIMUM
 YWindowMaximum: 0.0
 YWindowMinimum: -90.0
 graphs: 

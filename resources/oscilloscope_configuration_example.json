@@ -18,22 +18,9 @@
     "backgrounds":[ [ "000000" ] ]   
   },
   "gridMode": "Y",
-  "XAxes": [ 
-    {
-      "axisStyle": {
-        "axisColor": "00aa00",
-        "markerColor": "00aa00",
-        "labelColor": null
-      }
-    }
-  ],
-  "YAxes": [
-    {
-      "axisStyle": {
-        "axisColor": "00aa00",
-        "markerColor": "00aa00",
-        "labelColor": null
-      }
-    }
-  ]
+  "axisStyleDefaults": {
+      "axisColor": "00aa00",
+      "markerColor": "00aa00",
+      "labelColor": null
+  }
 }

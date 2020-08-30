@@ -25,10 +25,11 @@ public class ChartConfiguration {
     Double yWindowMinimum;
     Double yWindowMaximum;
     Map<String, RangeConfiguration> yWindows;
-    int leftOffset;
-    int rightOffset;
+    Integer leftOffset;
+    Integer rightOffset;
     boolean xExpandToGrid;
     boolean yExpandToGrid;
+    AxisStyleConfiguration axisStyleDefaults;
     List<AxisConfiguration> xAxes;
     List<AxisConfiguration> yAxes;
     GridStyleConfiguration gridStyle;

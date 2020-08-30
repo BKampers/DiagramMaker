@@ -19,6 +19,7 @@
         <h1>Diagram examples</h1>
         <%
             diagramMaker.setRequest(request);
+            diagramMaker.setSession(session);
             Map<String, String[]> examples = diagramMaker.getExamples();
         %>
         <div>

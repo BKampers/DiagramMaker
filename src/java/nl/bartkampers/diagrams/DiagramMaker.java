@@ -69,12 +69,12 @@ public class DiagramMaker {
 
 
     public void setRequest(HttpServletRequest request) {
-        this.request = request;
+        this.request = Objects.requireNonNull(request);
     }
 
 
     public void setSession(HttpSession session) {
-        this.session = session;
+        this.session = Objects.requireNonNull(session);
     }
 
 
@@ -151,7 +151,7 @@ public class DiagramMaker {
 
 
     private BufferedImage createImage(Drawable drawable, int type) {
-        BufferedImage image = new BufferedImage((drawable.width != null) ? drawable.width : DEFAULT_IMAGE_WIDTH, (drawable.height != null) ? drawable.height : DEFAULT_IMAGE_HEIGHT, type);
+        BufferedImage image = new BufferedImage(drawable.width, drawable.height, type);
         Graphics2D g2d = image.createGraphics();
         try {
             renderingDuration = 0;
@@ -180,6 +180,14 @@ public class DiagramMaker {
         try {
             Figures parsedFigures = parseFigures();
             ChartConfiguration parsedConfiguration = parseConfiguration(new YamlReader(getConfiguration()));
+            if (parsedConfiguration.getWidth() == null) {
+                parsedConfiguration.setWidth(DEFAULT_IMAGE_WIDTH );
+            }
+            if (parsedConfiguration.getHeight() == null) {
+                parsedConfiguration.setHeight(DEFAULT_IMAGE_HEIGHT );
+            }
+            ConfigurationCustomizer customizer = new ConfigurationCustomizer(parsedConfiguration, parsedFigures);
+            customizer.adjust();
             ChartRendererBuilder builder = new ChartRendererBuilder(parsedFigures);
             drawable.chartRenderer = builder.buildChartRenderer(parsedConfiguration);
             Map<Object, ChartData<Number, Number>> chartData = parsedFigures.getChartData();
@@ -443,8 +451,8 @@ public class DiagramMaker {
 
 
     private class Drawable {
-        Integer width;
-        Integer height;
+        int width;
+        int height;
         ChartRenderer chartRenderer;
     }
 
@@ -472,9 +480,9 @@ public class DiagramMaker {
     private static final String LOGGING_DIRECTORY = "logging";
     private static final String RESOURCES_DIRECTORY = "resources";
 
+    private static final int MAX_LOG_LENGTH = 20000;
+
     private static final int DEFAULT_IMAGE_HEIGHT = 400;
     private static final int DEFAULT_IMAGE_WIDTH = 500;
-
-    private static final int MAX_LOG_LENGTH = 20000;
 
 }

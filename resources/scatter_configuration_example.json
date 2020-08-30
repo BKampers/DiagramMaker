@@ -11,5 +11,10 @@
   "XGrid": { "type": "Integer" },
   "gridStyle": {
     "color": "777777"
+  },
+  "axisStyleDefaults": {
+      "axisColor": "000000",
+      "markerColor": "000000",
+      "labelColor": "000000"
   }
 }

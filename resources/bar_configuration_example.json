@@ -29,8 +29,9 @@
       "backgrounds": [ [ "ffffff" ], [ "eeeeee" ] ]
   },
   "gridMode": "Y",
-  "XAxes": [ { "axisStyle": { "axisColor": "777777", "markerColor": null } } ],
-  "YAxes": [ { "axisStyle": { "axisColor": null, "markerColor": null }, "unit": "%" } ],
+  "axisStyleDefaults": { "labelColor": "777777", "markerColor": null },
+  "XAxes": [ { "axisStyle": { "axisColor": "777777" } } ],
+  "YAxes": [ { "axisStyle": { "axisColor": null }, "unit": "%" } ],
   "leftOffset": 90,
   "rightOffset": 90,
   "locale": "nl",

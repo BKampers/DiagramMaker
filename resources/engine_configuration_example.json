@@ -7,6 +7,11 @@
     "Power": { "minimum": 0, "maximum": 120 },
     "Torque": { "minimum": 80, "maximum": 500 }    
   },
+  "axisStyleDefaults": {
+    "axisColor": "000000",
+    "markerColor": "000000",
+    "labelColor": "000000",
+  },
   "graphDefaults": {
     "type": "line",
     "graphDrawStyle": { "stroke": { "width": 3 } }
@@ -15,6 +20,13 @@
     "Power": { "graphDrawStyle": { "color": "255-0-0" } },
     "Torque": { "graphDrawStyle": { "color": "0-0-255" } }
   },
+  "XAxes": [
+    {
+      "axisStyle": {
+        "labelOffset": 5
+      }
+    }
+  ],
   "YAxes": [
     {
       "position": "MINIMUM", 
