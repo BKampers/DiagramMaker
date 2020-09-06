@@ -142,7 +142,7 @@ public class DiagramMaker {
            return createImage(parseDrawable(), type);
         }
         catch (UserDataException ex) {
-            getLogger().log(Level.WARNING, "Could not read configuration", ex);
+            log(Level.WARNING, "Could not read configuration", ex);
             BufferedImage image = new BufferedImage(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, type);
             drawException((Graphics2D) image.getGraphics(), ex);
             return image;
@@ -209,7 +209,7 @@ public class DiagramMaker {
             return parser.parse(figuresSource);
         }
         catch (UserDataException ex) {
-            getLogger().log(Level.FINEST, "Cannot parse YAML, try CSV", ex);
+            log(Level.FINEST, "Cannot parse YAML, try CSV", ex);
             CsvFiguresParser parser = new CsvFiguresParser();
             return parser.parse(figuresSource);
         }
@@ -256,7 +256,7 @@ public class DiagramMaker {
 
 
     private void sendMail() {
-        if (figuresModified && FORM.equals(source) && ! atLocalHost()) {
+        if (figuresModified && exceptionMessage == null && FORM.equals(source) && ! atLocalHost()) {
             mailChartDrawn();
         }
     }
@@ -282,7 +282,7 @@ public class DiagramMaker {
             return createBytes(createImage(BufferedImage.TYPE_INT_RGB), "jpg");
         }
         catch (IOException ex) {
-            getLogger().log(Level.SEVERE, null, ex);
+            log(Level.SEVERE, "Could not create JPG bytes", ex);
             return null;
         }
     }
