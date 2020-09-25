@@ -31,6 +31,12 @@ public class ConfigurationCustomizer {
         else {
             adjustDefault();
         }
+        allRenderers().stream().filter(renderer -> "line".equals(renderer.getType())).forEach(renderer -> adjustLine(renderer));
+    }
+
+    
+    private void adjustLine(DataRendererConfiguration renderer) {
+        applyIfNull(renderer.getGraphDrawStyle(), () -> renderer.setGraphDrawStyle(createLineDrawStyle()));
     }
 
 
@@ -91,6 +97,7 @@ public class ConfigurationCustomizer {
         }
         applyIfNull(configuration.getGraphDefaults().getWidth(), () -> configuration.getGraphDefaults().setWidth(barWidth));
         applyIfNull(configuration.getGraphDefaults().getAutoShift(), () -> configuration.getGraphDefaults().setAutoShift(Boolean.TRUE));
+        applyIfNull(configuration.getYWindowMinimum(), () -> configuration.setYWindowMinimum(0.0));
     }
 
 
@@ -170,6 +177,15 @@ public class ConfigurationCustomizer {
         configuration.setMarkerColor(AXIS_COLOR);
         configuration.setLabelColor(AXIS_COLOR);
         return configuration;
+    }
+
+
+    private AreaDrawStyleConfiguration createLineDrawStyle() {
+        AreaDrawStyleConfiguration style = new AreaDrawStyleConfiguration();
+        StrokeConfiguration stroke = new StrokeConfiguration();
+        stroke.setWidth(1.0f);
+        style.setStroke(stroke);
+        return style;
     }
 
 
