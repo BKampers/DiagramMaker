@@ -111,7 +111,7 @@ public class DiagramMaker {
                 }
             }
         }
-        Map<String, String[]> examples = new HashMap<>();
+        Map<String, String[]> examples = new TreeMap<>();
         for (String key : configurationsMap.keySet()) {
             if (figuresMap.containsKey(key)) {
                 examples.put(key, new String[] { configurationsMap.get(key), figuresMap.get(key) });

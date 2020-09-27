@@ -97,7 +97,29 @@ public class ConfigurationCustomizer {
         }
         applyIfNull(configuration.getGraphDefaults().getWidth(), () -> configuration.getGraphDefaults().setWidth(barWidth));
         applyIfNull(configuration.getGraphDefaults().getAutoShift(), () -> configuration.getGraphDefaults().setAutoShift(Boolean.TRUE));
-        applyIfNull(configuration.getYWindowMinimum(), () -> configuration.setYWindowMinimum(0.0));
+        adjustBarYWindow();
+    }
+
+
+    private void adjustBarYWindow() {
+        if (configuration.getYWindowMinimum() == null && configuration.getYWindowMaximum() == null) {
+            double min = Double.MAX_VALUE;
+            double max = - Double.MAX_VALUE;
+            for (ChartData<Number, Number> chartData  : figures.getChartData().values()) {
+                Iterator<ChartDataElement<Number, Number>> it = chartData.iterator();
+                while (it.hasNext()) {
+                    double value = it.next().getValue().doubleValue();
+                    min = Math.min(min, value);
+                    max = Math.max(max, value);
+                }
+            }
+            if (configuration.getYWindowMinimum() == null && min >= 0.0 && max > 0.0) {
+                configuration.setYWindowMinimum(0.0);
+            }
+            if (configuration.getYWindowMaximum() == null && min < 0.0 && max <= 0.0) {
+                configuration.setYWindowMaximum(0.0);
+            }
+        }
     }
 
 
