@@ -1,0 +1,63 @@
+# Tutorial:
+# When nothing is configured here, figures are plotted as colored dots. 
+# Note that the X-axis and Y-axis adapt to the ranges of the figures.
+
+# Rahter expand the axes to the origin? Just apply the next two lines by 
+# removing the comment sign (#):
+#XWindowMinimum: 0
+#YWindowMinimum: 0
+
+# To define the entire window, apply two more lines
+#XWindowMaximum: 6
+#YWindowMaximum: 6
+
+# Want to see a legend? Define its location with the next three lines
+#legendPosition: 
+#   x: 50
+#   y: 10
+# That does not look quite good, does it? Let's give it some space:
+#topMargin: 75
+# Or else make some more space with
+#leftMargin: 75
+#rightMargin: 75
+#bottomMargin: 75
+# and move the legend to another position.
+
+# If you want to see a bar diagram, configure it like this:
+#graphDefaults:
+#   type: bar
+# Optionally set the bar width
+#   width: 15
+
+# If you want to see a bar diagram, configure it like this:
+#graphDefaults:
+#   type: line
+# Optionally set the line dash and width
+#   graphDrawStyle: 
+#       stroke: 
+#           width: 3
+#           dash: [20, 5]
+
+# It is also possible to define a type per graph:
+#graphs:
+#    A:
+#        type: rectangle
+#        width: 7
+#        height: 7
+#        graphDrawStyle:
+#            borderColor: 0-0-200
+#            color: 100-100-255 #RGB
+#    B:
+#        type: dot
+#        graphDrawStyle:
+#            color: 100-255-100 #RGB
+# In the example above graph C will not be drawn unless the graphDefaults property is configured. 
+
+# To stack data, define the order of the graphs from bottom to top 
+#stack:
+#  - B
+#  - A
+
+# To move the leftmost and rightmost data away form the borders:
+#leftOffset: 10
+#rightOffset: 10

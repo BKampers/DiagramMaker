@@ -11,6 +11,7 @@ import bka.awt.chart.grid.*;
 import bka.awt.chart.render.*;
 import java.awt.*;
 import java.util.*;
+import java.util.stream.*;
 import nl.bartkampers.diagrams.*;
 
 
@@ -79,17 +80,24 @@ public class ChartRendererBuilder {
             renderers.put(entry.getKey(), renderer);
             rendererIndex++;
         }
+        if (chartConfiguration.getGraphDefaults() != null) {
+            for (Object key : figures.getChartData().keySet().stream().filter(key -> ! renderers.containsKey(key.toString())).collect(Collectors.toList())) {
+                renderers.put(key.toString(), buildDataRenderer(chartConfiguration.getGraphDefaults()));
+                rendererIndex++;
+            }
+        }
     }
 
 
     private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
-        ArrayList<String> keys = new ArrayList(figures.getChartData().keySet());
-        for (rendererIndex = 0; rendererIndex < keys.size(); ++rendererIndex) {
+        java.util.List<Object> keys = figures.getChartData().keySet().stream().filter(key -> ! renderers.containsKey(key.toString())).collect(Collectors.toList());
+        for (int i = 0; i < keys.size(); ++i) {
             AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getGraphDefaults());
             if (renderer == null) {
                 renderer = defaultDataRenderer(defaultColor());
             }
-            renderers.put(keys.get(rendererIndex), renderer);
+            renderers.put(keys.get(i).toString(), renderer);
+            rendererIndex++;
         }
     }
 

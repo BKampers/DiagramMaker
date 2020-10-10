@@ -218,14 +218,14 @@ public class DiagramMaker {
 
     private ChartConfiguration parseConfiguration(YamlReader reader) throws YamlException {
         populateYamlConfig(reader.getConfig());
-        ChartConfiguration chart = reader.read(ChartConfiguration.class);
-        if (chart == null) {
-            chart = new ChartConfiguration();
+        ChartConfiguration chartConfiguration = reader.read(ChartConfiguration.class);
+        if (chartConfiguration == null) {
+            chartConfiguration = new ChartConfiguration();
         }
         else if (atLocalHost()) {
-            storeYaml(chart);
+            storeYaml(chartConfiguration);
         }
-        return chart;
+        return chartConfiguration;
     }
 
 
