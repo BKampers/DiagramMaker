@@ -51,7 +51,8 @@
 #        type: dot
 #        graphDrawStyle:
 #            color: 100-255-100 #RGB
-# In the example above graph C will not be drawn unless the graphDefaults property is configured. 
+# In the example above graph C will not be drawn unless the graphDefaults
+# property is configured. 
 
 # To stack data, define the order of the graphs from bottom to top 
 #stack:

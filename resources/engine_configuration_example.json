@@ -11,6 +11,8 @@
     "axisColor": "000000",
     "markerColor": "000000",
     "labelColor": "000000",
+    "unitColor": "000000",
+    "titleColor": "000000"
   },
   "graphDefaults": {
     "type": "line",

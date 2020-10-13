@@ -31,7 +31,7 @@ public class ConfigurationCustomizer {
         else {
             adjustDefault();
         }
-        allRenderers().stream().filter(renderer -> renderer != null && "line".equals(renderer.getType())).forEach(renderer -> adjustLine(renderer));
+        allRenderers().stream().filter(renderer -> "line".equals(renderer.getType())).forEach(renderer -> adjustLine(renderer));
     }
 
     
@@ -139,10 +139,8 @@ public class ConfigurationCustomizer {
         Dimension dimension = new Dimension(Math.max(getDefaultSymbolWidth(), 10), Math.max(getDefaultSymbolHeight(), 10));
         if (configuration.getGraphs() != null) {
             for (DataRendererConfiguration renderer : configuration.getGraphs().values()) {
-                if (renderer != null) {
-                    dimension.width = Math.max(dimension.width, nonNullInt(renderer.getWidth()));
-                    dimension.height = Math.max(dimension.height, nonNullInt(renderer.getHeight()));
-                }
+                dimension.width = Math.max(dimension.width, nonNullInt(renderer.getWidth()));
+                dimension.height = Math.max(dimension.height, nonNullInt(renderer.getHeight()));
             }
         }
         return dimension;

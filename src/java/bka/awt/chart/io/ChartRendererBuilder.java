@@ -73,30 +73,26 @@ public class ChartRendererBuilder {
 
     private void buildConfiguredDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
         rendererIndex = 0;
-        for (Map.Entry<String, DataRendererConfiguration> entry : chartConfiguration.getGraphs().entrySet()) {
+        for (Object key : figures.getChartData().keySet()) {
             AbstractDataAreaRenderer renderer = buildDataRenderer(MergeUtil.merge(
                 chartConfiguration.getGraphDefaults(),
-                entry.getValue()));
-            renderers.put(entry.getKey(), renderer);
-            rendererIndex++;
-        }
-        if (chartConfiguration.getGraphDefaults() != null) {
-            for (Object key : figures.getChartData().keySet().stream().filter(key -> ! renderers.containsKey(key.toString())).collect(Collectors.toList())) {
-                renderers.put(key.toString(), buildDataRenderer(chartConfiguration.getGraphDefaults()));
-                rendererIndex++;
+                chartConfiguration.getGraphs().get(key.toString())));
+            if (renderer != null) {
+                renderers.put(key.toString(), renderer);
             }
+            rendererIndex++;
         }
     }
 
 
     private void buildDefaultDataRenderers(ChartConfiguration chartConfiguration, Map<String, AbstractDataAreaRenderer> renderers) throws ChartConfigurationException {
-        java.util.List<Object> keys = figures.getChartData().keySet().stream().filter(key -> ! renderers.containsKey(key.toString())).collect(Collectors.toList());
-        for (int i = 0; i < keys.size(); ++i) {
+        rendererIndex = 0;
+        for (Object key : figures.getChartData().keySet()) {
             AbstractDataAreaRenderer renderer = buildDataRenderer(chartConfiguration.getGraphDefaults());
             if (renderer == null) {
                 renderer = defaultDataRenderer(defaultColor());
             }
-            renderers.put(keys.get(i).toString(), renderer);
+            renderers.put(key.toString(), renderer);
             rendererIndex++;
         }
     }
