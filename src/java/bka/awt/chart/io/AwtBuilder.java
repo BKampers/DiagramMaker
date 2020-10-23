@@ -7,8 +7,11 @@ package bka.awt.chart.io;
 import bka.awt.chart.custom.*;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.*;
 
 
@@ -82,6 +85,30 @@ public class AwtBuilder {
         if (colorCode == null || NULL.equals(colorCode)) {
             return null;
         }
+        Color awtColor = parseAwtColor(colorCode);
+        if (awtColor != null) {
+            return awtColor;
+        }
+        return parseRgba(colorCode);
+    }
+
+
+    private static Color parseAwtColor(String colorCode) {
+        for (Field field : Color.class.getFields()) {
+            if (field.getType() == Color.class && colorCode.equals(field.getName())) {
+                try {
+                    return (Color) field.get(field);
+                }
+                catch (ReflectiveOperationException ex) {
+                    Logger.getLogger(AwtBuilder.class.getName()).log(Level.WARNING, "parseAwtColor", ex);
+                }
+            }
+        }
+        return null;
+    }
+
+
+    private static Color parseRgba(String colorCode) throws ChartConfigurationException {
         try {
             String[] split = colorCode.split("-");
             if (split.length == 1 && (colorCode.length() == 6 || colorCode.length() == 8)) {

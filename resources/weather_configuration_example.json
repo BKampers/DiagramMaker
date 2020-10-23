@@ -19,6 +19,9 @@
       "unit": "%"
     }
   ],
+  "gridStyle": {
+    "XColor": "DDDDDD"
+  },
   "graphDefaults": { 
     "type": "bar",
     "width": 15

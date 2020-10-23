@@ -11,7 +11,6 @@ import bka.awt.chart.grid.*;
 import bka.awt.chart.render.*;
 import java.awt.*;
 import java.util.*;
-import java.util.stream.*;
 import nl.bartkampers.diagrams.*;
 
 
@@ -238,7 +237,11 @@ public class ChartRendererBuilder {
 
     private GridStyle buildGridStyle(GridStyleConfiguration gridStyleConfiguration) throws ChartConfigurationException {
         if (gridStyleConfiguration.getBackgrounds() != null) {
-            return GridStyle.create(buildStroke(gridStyleConfiguration.getStroke()), awtBuilder.buildColor(gridStyleConfiguration.getColor()), awtBuilder.buildPaintBox(gridStyleConfiguration.getBackgrounds()));
+            StrokeConfiguration xStroke = (gridStyleConfiguration.getXStroke() != null) ? gridStyleConfiguration.getXStroke() : gridStyleConfiguration.getStroke();
+            StrokeConfiguration yStroke = (gridStyleConfiguration.getYStroke() != null) ? gridStyleConfiguration.getYStroke() : gridStyleConfiguration.getStroke();
+            String xColor = (gridStyleConfiguration.getXColor() != null) ? gridStyleConfiguration.getXColor() : gridStyleConfiguration.getColor();
+            String yColor = (gridStyleConfiguration.getYColor() != null) ? gridStyleConfiguration.getYColor() : gridStyleConfiguration.getColor();
+            return GridStyle.create(buildStroke(xStroke), awtBuilder.buildColor(xColor), buildStroke(yStroke), awtBuilder.buildColor(yColor), awtBuilder.buildPaintBox(gridStyleConfiguration.getBackgrounds()));
         }
         Stroke xStroke = buildStroke((gridStyleConfiguration.getXStroke() != null) ? gridStyleConfiguration.getXStroke() : gridStyleConfiguration.getStroke());
         Stroke yStroke = buildStroke((gridStyleConfiguration.getYStroke() != null) ? gridStyleConfiguration.getYStroke() : gridStyleConfiguration.getStroke());
@@ -430,7 +433,7 @@ public class ChartRendererBuilder {
 
     private AreaDrawStyle buildAreaDrawStyle(AreaDrawStyleConfiguration areaDrawStyleConfiguration) throws ChartConfigurationException {
         if (areaDrawStyleConfiguration == null) {
-            return null;
+            return DefaultDrawStyle.createSolid(defaultColor());
         }
         if (areaDrawStyleConfiguration.getColors() != null) {
             PointDrawStyle drawStyle = PointDrawStyle.createLinear(awtBuilder.buildColors(areaDrawStyleConfiguration.getColors()));

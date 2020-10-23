@@ -21,11 +21,18 @@ public class ConfigurationCustomizer {
 
 
     public void adjust() {
-        if (! allOfType("pie")) {
+        if (configuration.getGraphs() != null) {
+            configuration.getGraphs().keySet().forEach(key -> {
+                if (configuration.getGraphs().get(key) == null) {
+                    configuration.getGraphs().put(key, (configuration.getGraphDefaults() != null) ? configuration.getGraphDefaults() : new DataRendererConfiguration());
+                }
+            });
+        }
+        if (! allOfType(PIE)) {
             adjusXAxes();
             adjustYAxes();
         }
-        if (allOfType("bar") && configuration.getStack() == null) {
+        if (allOfType(BAR) && configuration.getStack() == null) {
             adjustBars();
         }
         else {
@@ -96,10 +103,25 @@ public class ConfigurationCustomizer {
             configuration.setGraphDefaults(new DataRendererConfiguration());
         }
         applyIfNull(configuration.getGraphDefaults().getWidth(), () -> configuration.getGraphDefaults().setWidth(barWidth));
-        applyIfNull(configuration.getGraphDefaults().getAutoShift(), () -> configuration.getGraphDefaults().setAutoShift(Boolean.TRUE));
+        if (! anyShift()) {
+            applyIfNull(configuration.getGraphDefaults().getAutoShift(), () -> configuration.getGraphDefaults().setAutoShift(Boolean.TRUE));
+        }
         adjustBarYWindow();
     }
 
+    private boolean anyShift() {
+        Integer defaultShift = (configuration.getGraphDefaults() == null) ? null : configuration.getGraphDefaults().getShift();
+        if (configuration.getGraphs() == null || configuration.getGraphs().isEmpty()) {
+            return defaultShift != null;
+        }
+        for (DataRendererConfiguration renderer : configuration.getGraphs().values()) {
+            Integer rendererShift = (renderer.getShift() == null) ? defaultShift : renderer.getShift();
+            if (rendererShift != null) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void adjustBarYWindow() {
         if (configuration.getYWindowMinimum() == null && configuration.getYWindowMaximum() == null) {
@@ -225,5 +247,8 @@ public class ConfigurationCustomizer {
     private static final int DEFAULT_LEFT_MARGIN = 40;
 
     private static final String AXIS_COLOR = "777777";
+
+    private static final String BAR = "bar";
+    private static final String PIE = "pie";
 
 }

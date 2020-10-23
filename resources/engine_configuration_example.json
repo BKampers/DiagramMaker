@@ -8,19 +8,19 @@
     "Torque": { "minimum": 80, "maximum": 500 }    
   },
   "axisStyleDefaults": {
-    "axisColor": "000000",
-    "markerColor": "000000",
-    "labelColor": "000000",
-    "unitColor": "000000",
-    "titleColor": "000000"
+    "axisColor": "BLACK",
+    "markerColor": "BLACK",
+    "labelColor": "BLACK",
+    "unitColor": "BLACK",
+    "titleColor": "BLACK"
   },
   "graphDefaults": {
     "type": "line",
     "graphDrawStyle": { "stroke": { "width": 3 } }
   },
   "graphs": {
-    "Power": { "graphDrawStyle": { "color": "255-0-0" } },
-    "Torque": { "graphDrawStyle": { "color": "0-0-255" } }
+    "Power": { "graphDrawStyle": { "color": "RED" } },
+    "Torque": { "graphDrawStyle": { "color": "BLUE" } }
   },
   "XAxes": [
     {

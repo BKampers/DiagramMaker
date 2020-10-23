@@ -9,7 +9,6 @@ import lombok.*;
 @Data
 public class DataRendererConfiguration {
 
-
     String type;
     Double base;
     Integer width;
