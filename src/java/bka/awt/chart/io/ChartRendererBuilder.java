@@ -389,9 +389,27 @@ public class ChartRendererBuilder {
 
 
     private PointDrawStyle buildPointDrawStyle(AreaDrawStyleConfiguration areaDrawStyleConfiguration) throws ChartConfigurationException {
-        PointDrawStyle style = PointDrawStyle.createLinear(awtBuilder.buildColors(areaDrawStyleConfiguration.getColors()));
-        style.setBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
+        if (areaDrawStyleConfiguration == null) {
+            return PointDrawStyle.createLinear(new Color[] { defaultColor(), defaultColor() } );
+        }
+        PointDrawStyle style = PointDrawStyle.createLinear(buildColors(areaDrawStyleConfiguration.getColors()));
+        if (areaDrawStyleConfiguration.getBorderColor() != null) {
+            style.setBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
+        }
         return style;
+    }
+
+
+    Color[] buildColors(String[] codes) throws ChartConfigurationException {
+        if (codes == null || codes.length == 0) {
+            Color color = defaultColor();
+            return new Color[] { color, color };
+        }
+        if (codes.length == 1) {
+            Color color = awtBuilder.buildColor(codes[0]);
+            return new Color[] { color, color };
+        }
+        return awtBuilder.buildColors(codes);
     }
 
 
@@ -436,7 +454,7 @@ public class ChartRendererBuilder {
             return DefaultDrawStyle.createSolid(defaultColor());
         }
         if (areaDrawStyleConfiguration.getColors() != null) {
-            PointDrawStyle drawStyle = PointDrawStyle.createLinear(awtBuilder.buildColors(areaDrawStyleConfiguration.getColors()));
+            PointDrawStyle drawStyle = PointDrawStyle.createLinear(buildColors(areaDrawStyleConfiguration.getColors()));
             if (areaDrawStyleConfiguration.getBorderColor() != null) {
                 drawStyle.setBorder(awtBuilder.buildColor(areaDrawStyleConfiguration.getBorderColor()));
             }
