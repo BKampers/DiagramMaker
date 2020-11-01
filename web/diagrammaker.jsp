@@ -37,13 +37,36 @@
                 <div style="display: table-cell;">
                 </div>
                 <div style="display: table-cell;">
-                    <form method="post"action="<%=request.getContextPath()%>/diagramexamples.jsp">
+                    <form method="post" action="<%=request.getContextPath()%>/diagramexamples.jsp">
                         <input type="submit" name="submit" value="Try one of the examples" />
                     </form>
                 </div>
             </div>
         </div>
-        <div><img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" /></div>
+        <div onclick="onClick(event)">
+            <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
+            <script>
+    //            var x,y;
+    //            function onMouseMove(event) {
+    //                x = event.offsetX;
+    //                y = event.offsetY;
+    //            }
+                /**
+                 */
+                function onClick(event) {
+                    location.href = stripParameters(window.location.href) + "?clickX=" + event.offsetX + "&clickY=" + event.offsetY;
+                }
+                /**
+                 */
+                function stripParameters(url) {
+                    var parametersIndex = url.indexOf("?");
+                    if (parametersIndex < 0) {
+                        return url;
+                    }
+                    return url.substr(0, parametersIndex);
+                }
+            </script>
+        </div>
         <div><%=diagramMaker.getStatusText()%></div>
         <div>
             <form method="post" action="<%=request.getContextPath()+request.getServletPath()%>">

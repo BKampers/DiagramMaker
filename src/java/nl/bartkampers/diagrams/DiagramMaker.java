@@ -156,6 +156,7 @@ public class DiagramMaker {
         try {
             renderingDuration = 0;
             long startTime = System.currentTimeMillis();
+            drawable.chartRenderer.highlight(getClickCoordinate());
             drawable.chartRenderer.paint(g2d, new Rectangle(0, 0, image.getWidth(), image.getHeight()));
             renderingDuration = System.currentTimeMillis() - startTime;
         }
@@ -164,6 +165,21 @@ public class DiagramMaker {
             drawException(g2d, ex);
         }
         return image;
+    }
+
+
+    private Point getClickCoordinate() {
+        String x = request.getParameter("clickX");
+        String y = request.getParameter("clickY");
+        if (x != null && y!= null) {
+            try {
+                return new Point(Integer.parseInt(x), Integer.parseInt(y));
+            }
+            catch (NumberFormatException ex) {
+                getLogger().log(Level.FINEST, x + "," + y, ex);
+            }
+        }
+        return null;
     }
 
 
@@ -190,6 +206,10 @@ public class DiagramMaker {
             customizer.adjust();
             ChartRendererBuilder builder = new ChartRendererBuilder(parsedFigures);
             drawable.chartRenderer = builder.buildChartRenderer(parsedConfiguration);
+            for (Object key : parsedFigures.getChartData().keySet()) {
+                drawable.chartRenderer.setHighlightFormat(key, "%s", "%s");
+                drawable.chartRenderer.setPointHighlightRenderer(key, new DefaultPointHighlightRenderer());
+            }
             Map<Object, ChartData<Number, Number>> chartData = parsedFigures.getChartData();
             drawable.chartRenderer.setCharts(chartData);
             drawable.width = parsedConfiguration.getWidth();
