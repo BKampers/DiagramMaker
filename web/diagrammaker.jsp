@@ -46,17 +46,15 @@
         <div onclick="onClick(event)">
             <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
             <script>
-    //            var x,y;
-    //            function onMouseMove(event) {
-    //                x = event.offsetX;
-    //                y = event.offsetY;
-    //            }
                 /**
+                 *  @param event mouse click event
                  */
                 function onClick(event) {
                     location.href = stripParameters(window.location.href) + "?clickX=" + event.offsetX + "&clickY=" + event.offsetY;
                 }
                 /**
+                 * @param url as string
+                 * @return url without parameters
                  */
                 function stripParameters(url) {
                     var parametersIndex = url.indexOf("?");

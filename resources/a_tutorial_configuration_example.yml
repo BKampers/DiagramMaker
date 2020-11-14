@@ -37,6 +37,11 @@
 #       stroke: 
 #           width: 3
 #           dash: [20, 5]
+# If you want to see a scatter, configure it like this:
+#graphDefaults:
+#   type: scatter
+# Note that the dots grow bigger for datapoints that occur
+# multiple times in your figures
 
 # It is also possible to define a type per graph:
 #graphs:
@@ -47,13 +52,13 @@
 #        shift: 25 # For bar types, if you like a bit of space between the bars, apply a shift
 #        graphDrawStyle:
 #            borderColor: BLACK # AWT constant
-#            color: 100-100-255 # (A)RGB
+#            color: 0-0-255 # (A)RGB
 #            topAreaColor: 7FDF0000  # For line graphs, optionally fill the area above the graph with (A)RGB
 #    B:
 #        type: dot
 #        shift: -25 # For bar types, if you like a bit of space between the bars, apply a shift
 #        graphDrawStyle:
-#            color: GREEN # AWT constant
+#            colors: [ ff0000, WHITE, 0-0-255 ]
 #            bottomAreaColor: 127-0-172-0 # For line graphs, optionally fill the area below the graph with (A)RGB
 
 # In the example above graph C will not be drawn unless the graphDefaults
