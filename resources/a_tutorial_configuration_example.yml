@@ -89,3 +89,10 @@
 # To move the leftmost and rightmost data away form the borders:
 #leftOffset: 10
 #rightOffset: 10
+
+# If you want to see a pie chart cnfigure like this:
+#graphDefaults:
+#   type: pie
+# Note that you can have only have two colums in your figures. The first column
+# will contain the "labels" of the pie chart, the second column will contain
+# the values to the labels.
