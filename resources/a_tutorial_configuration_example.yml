@@ -90,6 +90,14 @@
 #leftOffset: 10
 #rightOffset: 10
 
+# Specify alternating background colors
+#gridStyle:
+#    backgrounds: [ [ e6f6f7, bfeef2, ffffff ] ]
+# Or specify gradient background colors
+#    backgrounds: [ [ e6f6f7, bfeef2, ffffff ], [ dddddd, dddddd, dddddd ] ] 
+# Specify the axis to alternate the colors along
+#gridMode: X # X or Y
+
 # If you want to see a pie chart cnfigure like this:
 #graphDefaults:
 #   type: pie
