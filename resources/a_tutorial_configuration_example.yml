@@ -98,6 +98,32 @@
 # Specify the axis to alternate the colors along
 #gridMode: X # X or Y
 
+# Draw a second Y-axis for a different range or unit
+#YWindows:
+#    A: # graph name
+#        minimum: 1
+#        maximum: 5
+#    B: # graph name
+#        minimum: 0
+#        maximum: 3    
+#axisStyleDefaults:
+#    axisColor: GRAY
+#    markerColor: GRAY
+#    labelColor: GRAY
+#    unitColor: GRAY
+#    titleColor: GRAY
+#YAxes:
+#    - position: MINIMUM
+#      key: A # graph name
+#      title: length # configure leftMarging if you find the axis drawn off canvas
+#      unit: cm
+#    - position: MAXIMUM
+#      key: B # graph name
+#      title: weight # configure rightMarging if you find the axis drawn off canvas
+#      unit: kg
+#      axisStyle:
+#          labelOffset: 25
+
 # If you want to see a pie chart cnfigure like this:
 #graphDefaults:
 #   type: pie
