@@ -9,17 +9,20 @@ import bka.awt.chart.io.*;
 import bka.awt.chart.render.*;
 import bka.mail.*;
 import java.awt.*;
+import java.awt.geom.PathIterator;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.*;
 import java.util.logging.*;
 import javax.imageio.*;
 import javax.mail.*;
 import javax.servlet.http.*;
 import net.sourceforge.yamlbeans.*;
+import org.json.*;
 
 
 public class DiagramMaker {
@@ -132,6 +135,42 @@ public class DiagramMaker {
     }
 
 
+    public String getDataCoordinates() {
+        if (areas == null) {
+            return "{}";
+        }
+        try {
+            float[] coords = new float[6];
+            JSONObject coordinates = new JSONObject();
+            for (Map.Entry<Object, Map<Shape, String>> entry : areas.entrySet()) {
+                JSONArray array = new JSONArray();
+                for (Map.Entry<Shape, String> area : entry.getValue().entrySet()) {
+                    JSONObject areaObject = new JSONObject();
+                    JSONArray polygon = new JSONArray();
+                    PathIterator it = area.getKey().getPathIterator(null);
+                    while (! it.isDone()) {
+                        it.currentSegment(coords);
+                        JSONObject point = new JSONObject();
+                        point.put("x", Math.round(coords[0]));
+                        point.put("y", Math.round(coords[1]));
+                        polygon.put(point);
+                        it.next();
+                    }
+                    areaObject.put("polygon", polygon);
+                    areaObject.put("text", area.getValue());
+                    array.put(areaObject);
+                }
+                coordinates.put(Objects.toString(entry.getKey()), array);
+            }
+            return coordinates.toString();
+        }
+        catch (JSONException ex) {
+            Logger.getLogger(DiagramMaker.class.getName()).log(Level.WARNING, "Could not create data coordinates", ex);
+            return "{}";
+        }
+    }
+
+
     private BufferedImage createImage() {
         return createImage(BufferedImage.TYPE_INT_ARGB);
     }
@@ -151,6 +190,7 @@ public class DiagramMaker {
 
 
     private BufferedImage createImage(Drawable drawable, int type) {
+        areas = null;
         BufferedImage image = new BufferedImage(drawable.width, drawable.height, type);
         Graphics2D g2d = image.createGraphics();
         try {
@@ -159,6 +199,7 @@ public class DiagramMaker {
             drawable.chartRenderer.highlight(getClickCoordinate());
             drawable.chartRenderer.paint(g2d, new Rectangle(0, 0, image.getWidth(), image.getHeight()));
             renderingDuration = System.currentTimeMillis() - startTime;
+            areas = drawable.chartRenderer.getAreas();
         }
         catch (ChartDataException ex) {
             log(Level.INFO, "Invalid user data", ex);
@@ -484,6 +525,7 @@ public class DiagramMaker {
     private HttpServletRequest request;
     private HttpSession session;
 
+    private Map<Object, Map<Shape, String>> areas;
     private long renderingDuration;
     private long streamingDuration;
     private int imageSize;

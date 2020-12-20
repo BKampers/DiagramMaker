@@ -10,6 +10,52 @@
 <jsp:useBean id="diagramMaker" class="nl.bartkampers.diagrams.DiagramMaker" scope="session" />
 
 <!DOCTYPE html>
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  /*width: 120px;
+  height: 40px;*/
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+.tooltip:hover span {
+    display:block;
+    position:fixed;
+    overflow:hidden;
+}
+</style>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,11 +89,70 @@
                 </div>
             </div>
         </div>
-        <div onclick="onClick(event)">
+        <div onmousemove="onMouseMove(event)" onclick="onClick(event)" class="tooltip">
+            <span id="tooltip-span" class="tooltiptext"></span>
             <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
             <script>
+                var tooltipSpan = document.getElementById('tooltip-span');
+                var coordinates = <%=diagramMaker.getDataCoordinates()%>;
                 /**
-                 *  @param event mouse click event
+                 * @param event mouse move
+                 */
+                function onMouseMove(event) {
+                    tooltipSpan.textContent = getTooltipText(event);
+                    if (tooltipSpan.textContent !== "") {
+                        tooltipSpan.style.top = (event.clientY + 20) + "px";
+                        tooltipSpan.style.left = (event.clientX + 20) + "px";
+                        tooltipSpan.style.width = "120px";
+                        tooltipSpan.style.height = "40px";
+                    }
+                    else {
+                        tooltipSpan.style.width = "0px";
+                        tooltipSpan.style.height = "0px";
+                    }
+                }
+                function getTooltipText(event) {
+                    for (var i in coordinates) {
+                        var tooltips = coordinates[i];
+                        for (var t = 0; t < tooltips.length; ++t) {
+                            var tooltip = tooltips[t];
+                            if (pointInPolygon(pointOf(event), tooltips[t].polygon)) {
+                                return tooltip.text;
+                            }
+                        }
+                    }
+                    return "";
+                }
+                /**
+                 * @param event
+                 * @return point of ebent
+                 */
+                function pointOf(event) {
+                    var point = {};
+                    point.x = event.offsetX;
+                    point.y = event.offsetY;
+                    return point;
+                }
+                /**
+                 * @param point
+                 * @param polygon
+                 * @return true if point in polygon, false otherwise,
+                 */
+                function pointInPolygon(point, polygon) {
+                    var j = polygon.length - 1;
+                    var oddNodes = false;
+                    for (var i = 0; i < polygon.length; ++i) {
+                        if ((polygon[i].y < point.y && polygon[j].y >= point.y
+                        ||   polygon[j].y < point.y && polygon[i].y >= point.y)
+                        && (polygon[i].x <= point.x || polygon[j].x <= point.x)) {
+                            oddNodes ^= (polygon[i].x + (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y) * (polygon[j].x - polygon[i].x) < point.x);
+                        }
+                        j = i;
+                    }
+                    return oddNodes;
+                }
+                /**
+                 *  @param event mouse click
                  */
                 function onClick(event) {
                     location.href = stripParameters(window.location.href) + "?clickX=" + event.offsetX + "&clickY=" + event.offsetY;

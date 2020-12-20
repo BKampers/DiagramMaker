@@ -107,7 +107,7 @@
 #        minimum: 0
 #        maximum: 3    
 #axisStyleDefaults:
-#    axisColor: GRAY
+#    axisColor: GRAY 
 #    markerColor: GRAY
 #    labelColor: GRAY
 #    unitColor: GRAY
