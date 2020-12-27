@@ -136,38 +136,34 @@ public class DiagramMaker {
 
 
     public String getDataCoordinates() {
-        if (areas == null) {
-            return "{}";
-        }
-        try {
-            float[] coords = new float[6];
-            JSONObject coordinates = new JSONObject();
-            for (Map.Entry<Object, Map<Shape, String>> entry : areas.entrySet()) {
-                JSONArray array = new JSONArray();
-                for (Map.Entry<Shape, String> area : entry.getValue().entrySet()) {
-                    JSONObject areaObject = new JSONObject();
-                    JSONArray polygon = new JSONArray();
-                    PathIterator it = area.getKey().getPathIterator(null);
-                    while (! it.isDone()) {
-                        it.currentSegment(coords);
-                        JSONObject point = new JSONObject();
-                        point.put("x", Math.round(coords[0]));
-                        point.put("y", Math.round(coords[1]));
-                        polygon.put(point);
-                        it.next();
+        JSONArray coordinates = new JSONArray();
+        if (areas != null) {
+            try {
+                float[] coords = new float[6];
+                for (Map<Shape, String> entry : areas.values()) {
+                    for (Map.Entry<Shape, String> area : entry.entrySet()) {
+                        JSONObject areaObject = new JSONObject();
+                        JSONArray polygon = new JSONArray();
+                        PathIterator it = area.getKey().getPathIterator(null);
+                        while (! it.isDone()) {
+                            it.currentSegment(coords);
+                            JSONObject point = new JSONObject();
+                            point.put("x", Math.round(coords[0]));
+                            point.put("y", Math.round(coords[1]));
+                            polygon.put(point);
+                            it.next();
+                        }
+                        areaObject.put("polygon", polygon);
+                        areaObject.put("text", area.getValue());
+                        coordinates.put(areaObject);
                     }
-                    areaObject.put("polygon", polygon);
-                    areaObject.put("text", area.getValue());
-                    array.put(areaObject);
                 }
-                coordinates.put(Objects.toString(entry.getKey()), array);
             }
-            return coordinates.toString();
+            catch (JSONException ex) {
+                Logger.getLogger(DiagramMaker.class.getName()).log(Level.WARNING, "Could not create data coordinates", ex);
+            }
         }
-        catch (JSONException ex) {
-            Logger.getLogger(DiagramMaker.class.getName()).log(Level.WARNING, "Could not create data coordinates", ex);
-            return "{}";
-        }
+        return coordinates.toString();
     }
 
 

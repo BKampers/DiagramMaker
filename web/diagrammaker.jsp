@@ -94,62 +94,109 @@
             <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
             <script>
                 var tooltipSpan = document.getElementById('tooltip-span');
-                var coordinates = <%=diagramMaker.getDataCoordinates()%>;
+                var tooltips = <%=diagramMaker.getDataCoordinates()%>;
                 /**
                  * @param event mouse move
                  */
                 function onMouseMove(event) {
-                    tooltipSpan.textContent = getTooltipText(event);
-                    if (tooltipSpan.textContent !== "") {
+                    var text = getTooltipText(point(event.offsetX, event.offsetY));
+                    if (text !== null) {
+                        tooltipSpan.textContent = text;
                         tooltipSpan.style.top = (event.clientY + 20) + "px";
                         tooltipSpan.style.left = (event.clientX + 20) + "px";
                         tooltipSpan.style.width = "120px";
                         tooltipSpan.style.height = "40px";
                     }
                     else {
+                        tooltipSpan.textContent = "";
                         tooltipSpan.style.width = "0px";
                         tooltipSpan.style.height = "0px";
                     }
                 }
-                function getTooltipText(event) {
-                    for (var i in coordinates) {
-                        var tooltips = coordinates[i];
-                        for (var t = 0; t < tooltips.length; ++t) {
-                            var tooltip = tooltips[t];
-                            if (pointInPolygon(pointOf(event), tooltips[t].polygon)) {
-                                return tooltip.text;
-                            }
-                        }
-                    }
-                    return "";
-                }
                 /**
-                 * @param event
-                 * @return point of ebent
+                 * @param x
+                 * @@param y 
+                 * @return point (x,y)
                  */
-                function pointOf(event) {
+                function point(x, y) {
                     var point = {};
-                    point.x = event.offsetX;
-                    point.y = event.offsetY;
+                    point.x = x;
+                    point.y = y;
                     return point;
                 }
                 /**
                  * @param point
-                 * @param polygon
-                 * @return true if point in polygon, false otherwise,
+                 * @returns tool tip text for point of mouse event, if available
+                 *          null if not available
                  */
-                function pointInPolygon(point, polygon) {
-                    var j = polygon.length - 1;
-                    var oddNodes = false;
-                    for (var i = 0; i < polygon.length; ++i) {
-                        if ((polygon[i].y < point.y && polygon[j].y >= point.y
-                        ||   polygon[j].y < point.y && polygon[i].y >= point.y)
-                        && (polygon[i].x <= point.x || polygon[j].x <= point.x)) {
-                            oddNodes ^= (polygon[i].x + (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y) * (polygon[j].x - polygon[i].x) < point.x);
+                function getTooltipText(point) {
+                    for (var i = 0; i < tooltips.length; ++i) {
+                        var tooltip = tooltips[i];
+                        if (pointInsidePolygon(point, tooltip.polygon)) {
+                            return tooltip.text;
                         }
-                        j = i;
                     }
-                    return oddNodes;
+                    return null;
+                }
+                /**
+                 * @param point
+                 * @param polygon
+                 * @return true if point inside polygon, false otherwise,
+                 */
+                function pointInsidePolygon(point, polygon) {
+                    var inside = false;
+                    var corner1 = polygon[polygon.length - 1];
+                    for (var i = 0; i < polygon.length; ++i) {
+                        var corner2 = polygon[i];
+                        if (yBetween(point, corner1, corner2) && xAfter(point, corner1, corner2)) {
+                            inside ^= point.x > corner2.x + interpolatedX(point, corner1, corner2);
+                        }
+                        corner1 = corner2;
+                    }
+                    return inside;
+                }
+                /**
+                 * @param point
+                 * @param corner1
+                 * @param corner2
+                 * @return interpolated x coordinate for point's y coordinate in rectangle between corner1 and corner2
+                 */
+                function interpolatedX(point, corner1, corner2) {
+                    return (point.y - corner2.y) / height(corner1, corner2) * width(corner1, corner2);
+                }
+                /**
+                 * @param corner1
+                 * @param corner2
+                 * @return height of rectangle between corner1 and corner2
+                 */
+                function height(corner1, corner2) {
+                    return corner1.y - corner2.y;
+                }
+                /**
+                 * @param corner1
+                 * @param corner2
+                 * @return width of rectangle between corner1 and corner2
+                 */
+                function width(corner1, corner2) {
+                    return corner1.x - corner2.x;
+                }
+                /**
+                 * @param point
+                 * @param p1
+                 * @param p2
+                 * @returns true if y of point between p1 and p2
+                 */
+                function yBetween(point, p1, p2) {
+                    return p1.y < point.y && point.y <= p2.y || p2.y < point.y && point.y <= p1.y;
+                }
+                /**
+                 * @param point
+                 * @param p1
+                 * @param p2
+                 * @returns true if x of point above p1 or p2
+                 */
+                function xAfter(point, p1, p2) {
+                    return p1.x <= point.x || p2.x <= point.x;
                 }
                 /**
                  *  @param event mouse click
@@ -188,7 +235,6 @@
                     <input type="submit" name="submit" value="Draw chart" />
                  </div>
             </form>
-            <!-- <a href="download.jsp">download the jpg file</a> -->
         </div>
         <p/>
         <div>
