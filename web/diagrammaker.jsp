@@ -90,7 +90,7 @@
             </div>
         </div>
         <div onmousemove="onMouseMove(event)" onclick="onClick(event)" class="tooltip">
-            <span id="tooltip-span" class="tooltiptext"></span>
+            <span id="tooltip-span" class="tooltiptext"> data-html="true"</span>
             <img src="data:image/png;base64, <%=diagramMaker.getBase64()%>" alt="Image not created" />
             <script>
                 var tooltipSpan = document.getElementById('tooltip-span');

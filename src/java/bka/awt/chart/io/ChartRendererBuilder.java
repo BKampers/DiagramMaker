@@ -24,7 +24,7 @@ public class ChartRendererBuilder {
 
     public ChartRenderer buildChartRenderer(ChartConfiguration chartConfiguration) throws ChartConfigurationException {
         ChartRenderer chartRenderer = new ChartRenderer();
-        chartRenderer.setLocale(buildLocale(chartConfiguration.getLocale()));
+        chartRenderer.setLocale(buildLocale(chartConfiguration));
         chartRenderer.setMargins(
             nonNullInt(chartConfiguration.getLeftMargin(), 0),
             nonNullInt(chartConfiguration.getRightMargin(), 0),
@@ -56,6 +56,21 @@ public class ChartRendererBuilder {
         return chartRenderer;
     }
 
+    public Locale buildLocale(ChartConfiguration chartConfiguration) {
+        String localeCode = chartConfiguration.getLocale();
+        if (localeCode == null || localeCode.isEmpty()) {
+            return Locale.getDefault();
+        }
+        String[] locales = localeCode.split("-");
+        switch (locales.length) {
+            case 1:
+                return new Locale(locales[0]);
+            case 2:
+                return new Locale(locales[0], locales[1]);
+            default:
+                return new Locale(locales[0], locales[1], locales[2]);
+        }
+    }
 
     private Map<String, AbstractDataAreaRenderer> buildDataRenderers(ChartConfiguration chartConfiguration) throws ChartConfigurationException {
         Map<String, AbstractDataAreaRenderer> renderers = new LinkedHashMap<>();
@@ -119,22 +134,6 @@ public class ChartRendererBuilder {
                 stackBase = renderer;
             }
         }
-    }
-
-
-    private static Locale buildLocale(String localeCode) {
-        if (localeCode != null && ! localeCode.isEmpty()) {
-            String[] locales = localeCode.split("-");
-            switch (locales.length) {
-                case 1:
-                    return new Locale(locales[0]);
-                case 2:
-                    return new Locale(locales[0], locales[1]);
-                default:
-                    return new Locale(locales[0], locales[1], locales[2]);
-            }
-        }
-        return Locale.getDefault();
     }
 
 

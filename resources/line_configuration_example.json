@@ -17,6 +17,8 @@
   "gridStyle": { 
     "backgrounds": [ [ "e6f6f7", "bfeef2" ] ] 
   },
+  "tooltipXFormat": "%d",
+  "tooltipYFormat": "%.1f",
   "gridMode": "X",
   "legendPosition": { "x": 475, "y": 0 }
 }

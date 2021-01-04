@@ -5,17 +5,19 @@
 package nl.bartkampers.diagrams;
 
 import bka.awt.chart.*;
+import bka.awt.chart.geometry.*;
 import bka.awt.chart.io.*;
 import bka.awt.chart.render.*;
 import bka.mail.*;
+import bka.text.*;
 import java.awt.*;
-import java.awt.geom.PathIterator;
+import java.awt.geom.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
+import java.text.*;
 import java.util.*;
-import java.util.List;
 import java.util.function.*;
 import java.util.logging.*;
 import javax.imageio.*;
@@ -137,33 +139,65 @@ public class DiagramMaker {
 
     public String getDataCoordinates() {
         JSONArray coordinates = new JSONArray();
-        if (areas != null) {
-            try {
-                float[] coords = new float[6];
-                for (Map<Shape, String> entry : areas.values()) {
-                    for (Map.Entry<Shape, String> area : entry.entrySet()) {
-                        JSONObject areaObject = new JSONObject();
-                        JSONArray polygon = new JSONArray();
-                        PathIterator it = area.getKey().getPathIterator(null);
-                        while (! it.isDone()) {
-                            it.currentSegment(coords);
-                            JSONObject point = new JSONObject();
-                            point.put("x", Math.round(coords[0]));
-                            point.put("y", Math.round(coords[1]));
-                            polygon.put(point);
-                            it.next();
-                        }
-                        areaObject.put("polygon", polygon);
-                        areaObject.put("text", area.getValue());
-                        coordinates.put(areaObject);
-                    }
-                }
-            }
-            catch (JSONException ex) {
-                Logger.getLogger(DiagramMaker.class.getName()).log(Level.WARNING, "Could not create data coordinates", ex);
-            }
-        }
+        areaGeometries.forEach((key, graphGeometry) -> {
+            graphGeometry.getDataPoints().forEach(point -> {
+                coordinates.put(createAreaObject(point.getArea(), tooltipText(key, point.getX(), point.getY())));
+            });
+        });
         return coordinates.toString();
+    }
+
+    private String tooltipText(Object key, Number x, Number y) {
+        if (tooltipFormat == null) {
+            return Objects.toString(key) + ": " + format(xFormat, x) + separator() + format(yFormat, y);
+        }
+        return tooltipFormat.replaceAll("\\{n\\}", Objects.toString(key)).replaceAll("\\{x\\}", format(xFormat, x)).replaceAll("\\{y\\}", format(yFormat, y));
+    }
+
+    private String separator() {
+        return (symbols.getDecimalSeparator() == ',') ? "; " : ", ";
+    }
+
+    private String format(String format, Number number) {
+        try {
+            return FormatterUtil.format(format, number);
+        }
+        catch (RuntimeException ex) {
+            getLogger().log(Level.WARNING, ex.getMessage());
+            return number.toString();
+        }
+    }
+
+
+    private static JSONObject createAreaObject(Shape shape, String label) {
+        try {
+            JSONObject areaObject = new JSONObject();
+            areaObject.put("polygon", createPolygonArray(shape));
+            areaObject.put("text", label);
+            return areaObject;
+        }
+        catch (JSONException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private static JSONArray createPolygonArray(Shape shape) throws JSONException {
+        JSONArray polygon = new JSONArray();
+        PathIterator it = shape.getPathIterator(null);
+        while (!it.isDone()) {
+            polygon.put(createPointObject(it));
+            it.next();
+        }
+        return polygon;
+    }
+
+    private static JSONObject createPointObject(PathIterator it) throws JSONException {
+        JSONObject point = new JSONObject();
+        float[] coords = new float[6];
+        it.currentSegment(coords);
+        point.put("x", Math.round(coords[0]));
+        point.put("y", Math.round(coords[1]));
+        return point;
     }
 
 
@@ -186,7 +220,7 @@ public class DiagramMaker {
 
 
     private BufferedImage createImage(Drawable drawable, int type) {
-        areas = null;
+        areaGeometries = null;
         BufferedImage image = new BufferedImage(drawable.width, drawable.height, type);
         Graphics2D g2d = image.createGraphics();
         try {
@@ -195,7 +229,7 @@ public class DiagramMaker {
             drawable.chartRenderer.highlight(getClickCoordinate());
             drawable.chartRenderer.paint(g2d, new Rectangle(0, 0, image.getWidth(), image.getHeight()));
             renderingDuration = System.currentTimeMillis() - startTime;
-            areas = drawable.chartRenderer.getAreas();
+            areaGeometries = drawable.chartRenderer.getAreaGeometries();
         }
         catch (ChartDataException ex) {
             log(Level.INFO, "Invalid user data", ex);
@@ -245,12 +279,19 @@ public class DiagramMaker {
             drawable.chartRenderer = builder.buildChartRenderer(parsedConfiguration);
             for (Object key : parsedFigures.getChartData().keySet()) {
                 drawable.chartRenderer.setHighlightFormat(key, "%s", "%s");
-                drawable.chartRenderer.setPointHighlightRenderer(key, new DefaultPointHighlightRenderer());
+                DefaultPointHighlightRenderer highlightRenderer = new DefaultPointHighlightRenderer();
+                highlightRenderer.setXFormat(parsedConfiguration.getTooltipXFormat());
+                highlightRenderer.setYFormat(parsedConfiguration.getTooltipYFormat());
+                drawable.chartRenderer.setPointHighlightRenderer(key, highlightRenderer);
             }
             Map<Object, ChartData<Number, Number>> chartData = parsedFigures.getChartData();
             drawable.chartRenderer.setCharts(chartData);
             drawable.width = parsedConfiguration.getWidth();
             drawable.height = parsedConfiguration.getHeight();
+            tooltipFormat = parsedConfiguration.getTooltipFormat();
+            xFormat = parsedConfiguration.getTooltipXFormat();
+            yFormat = parsedConfiguration.getTooltipYFormat();
+            symbols = new DecimalFormatSymbols(builder.buildLocale(parsedConfiguration));
             return drawable;
         }
         catch (YamlException | ChartConfigurationException ex) {
@@ -514,14 +555,19 @@ public class DiagramMaker {
     }
 
 
+    private HttpServletRequest request;
+    private HttpSession session;
+
     private String configuration;
     private String figures;
     private String source;
 
-    private HttpServletRequest request;
-    private HttpSession session;
+    private Map<Object, GraphGeometry<AreaGeometry>> areaGeometries;
+    private String tooltipFormat;
+    private String xFormat;
+    private String yFormat;
+    DecimalFormatSymbols symbols;
 
-    private Map<Object, Map<Shape, String>> areas;
     private long renderingDuration;
     private long streamingDuration;
     private int imageSize;

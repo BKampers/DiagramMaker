@@ -39,5 +39,8 @@ public class ChartConfiguration {
     DataRendererConfiguration graphDefaults;
     Map<String, DataRendererConfiguration> graphs;
     List<String> stack;
+    String tooltipFormat;
+    String tooltipXFormat;
+    String tooltipYFormat;
 
 }

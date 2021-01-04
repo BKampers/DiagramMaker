@@ -48,6 +48,7 @@ leftOffset: 30
 legendPosition: 
    x: 450
    y: 50
+tooltipFormat: '{n} {x}: {y}'
 rightMargin: 115
 rightOffset: 30
 title: South Pole Temperatures
