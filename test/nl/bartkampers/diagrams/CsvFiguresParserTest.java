@@ -64,7 +64,10 @@ public class CsvFiguresParserTest {
         assertEquals(timestamp(2000, Calendar.APRIL, 30, 1, 0, 30, 0), graphs.get("A").get(4).getKey().longValue());
         assertEquals(timestamp(2001, Calendar.MAY, 31, 22, 30, 15, 100), graphs.get("A").get(5).getKey().longValue());
         assertEquals(timestamp(2002, Calendar.JUNE, 4, 3, 45, 59, 990), graphs.get("A").get(6).getKey().longValue());
-        assertEquals(timestamp(2003, Calendar.JULY, 27, 0, 0, 0, 1), graphs.get("A").get(7).getKey().longValue());
+        assertEquals(timestamp(2003, Calendar.JULY, 14, 4, 1, 10, 1), graphs.get("A").get(7).getKey().longValue());
+        assertEquals(timestamp(2004, Calendar.AUGUST, 24, 5, 2, 20, 123), graphs.get("A").get(8).getKey().longValue());
+        assertEquals(timestamp(2005, Calendar.SEPTEMBER, 29, 6, 03, 30, 124), graphs.get("A").get(9).getKey().longValue());
+        assertEquals(timestamp(2006, Calendar.OCTOBER, 30, 7, 4, 41, 0), graphs.get("A").get(10).getKey().longValue());
     }
 
 
@@ -84,26 +87,29 @@ public class CsvFiguresParserTest {
     private CsvFiguresParser parser;
 
 
-    private static final String SOURCE =
-        "   ,   A,   B\n" +
-        "1.0,  0.1, 11, \n" +
-        "2.0,  0.2, 12, 2\n" +
-        "3.0,  0.3, 13\n";
+    private static final String SOURCE
+        = "   ,   A,   B\n"
+        + "1.0,  0.1, 11, \n"
+        + "2.0,  0.2, 12, 2\n"
+        + "3.0,  0.3, 13\n";
 
-    private static final String SOURCE_WITH_LABELS =
-        "      ,   A\n" +
-        "\"a\" ,  0.1\n" +
-        "\"bb\",  0.2\n" +
-        "\"\"  ,  0.3\n";
+    private static final String SOURCE_WITH_LABELS
+        = "      ,   A\n"
+        + "\"a\" ,  0.1\n"
+        + "\"bb\",  0.2\n"
+        + "\"\"  ,  0.3\n";
 
-    private static final String SOURCE_WITH_DATES =
-        "                       ,  A\n" +
-        "   1-12                , 0.1\n" +
-        "1970-01-01             , 0.2\n "+
-        "1970-02-01T12          , 0.3\n" +
-        "1970-03-18T11:58       , 0.4\n" +
-        "2000-04-30T01:00:30    , 0.5\n" +
-        "2001-05-31T22:30:15.1  , 0.6\n" +
-        "2002-06-04T03:45:59.99 , 0.7\n" +
-        "2003-07-27T00:00:00.001, 0.8\n";
+    private static final String SOURCE_WITH_DATES
+        = "                        ,  A\n"
+        + "   1-12                 , 0.1\n"
+        + "1970-01-01              , 0.2\n "
+        + "1970-02-01T12           , 0.3\n"
+        + "1970-03-18T11:58        , 0.4\n"
+        + "2000-04-30T01:00:30     , 0.5\n"
+        + "2001-05-31T22:30:15.1   , 0.6\n"
+        + "2002-06-04T03:45:59.99  , 0.7\n"
+        + "2003-07-14T04:01:10.001 , 0.8\n"
+        + "2004-08-24T05:02:20.1234, 0.9\n"
+        + "2005-09-29T06:03:30.1235, 1.0\n"
+        + "2006-10-30T07:04:40.9999, 1.0\n";
 }

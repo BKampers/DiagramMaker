@@ -17,6 +17,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.text.*;
+import java.util.List;
 import java.util.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -140,7 +141,9 @@ public class DiagramMaker {
     public String getDataCoordinates() {
         JSONArray coordinates = new JSONArray();
         areaGeometries.forEach((key, graphGeometry) -> {
-            graphGeometry.getDataPoints().forEach(point -> {
+            graphGeometry.stream()
+                    .filter(point -> point.getArea() != null)
+                    .forEach(point -> {
                 coordinates.put(createAreaObject(point.getArea(), tooltipText(key, point.getX(), point.getY())));
             });
         });
@@ -562,7 +565,7 @@ public class DiagramMaker {
     private String figures;
     private String source;
 
-    private Map<Object, GraphGeometry<AreaGeometry>> areaGeometries;
+    private Map<Object, List<AreaGeometry>> areaGeometries;
     private String tooltipFormat;
     private String xFormat;
     private String yFormat;

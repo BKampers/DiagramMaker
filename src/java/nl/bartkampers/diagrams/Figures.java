@@ -5,9 +5,9 @@
 package nl.bartkampers.diagrams;
 
 import bka.awt.chart.*;
+import bka.text.*;
 import java.math.*;
 import java.util.*;
-import java.util.regex.*;
 
 
 public final class Figures {
@@ -25,7 +25,7 @@ public final class Figures {
 
 
     private Number qualifiedNumber(Object key, String string, Map<Object, EnumSet<DataType>> types) throws UserDataException {
-        Date date = getDate(string);
+        Date date = TIMESTAMP_MATCHER.getDate(string);
         if (date != null) {
             return qualifiedNumber(key, date.getTime(), DataType.DATE, types);
         }
@@ -96,89 +96,6 @@ public final class Figures {
         return labels.get(index);
     }
 
-  
-    private static Date getDate(String value) {
-        Matcher matcher = datePattern().matcher(value);
-        if (! matcher.matches()) {
-            return null;
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        calendar.set(Calendar.ERA, GregorianCalendar.AD);
-        applyIfSet(calendar, Calendar.YEAR, matcher.group(YEAR));
-        applyIfSet(calendar, Calendar.MONTH, month(matcher.group(MONTH)));
-        applyIfSet(calendar, Calendar.DATE, matcher.group(DATE));
-        applyIfSet(calendar, Calendar.HOUR, matcher.group(HOUR));
-        applyIfSet(calendar, Calendar.MINUTE, matcher.group(MINUTE));
-        applyIfSet(calendar, Calendar.SECOND, matcher.group(SECOND));
-        applyIfSet(calendar, Calendar.MILLISECOND, thousandths(matcher.group(MILLI)));
-        return calendar.getTime();
-    }
-
-
-    private static Pattern datePattern() {
-        return Pattern.compile(
-            namedDecimalGroup(YEAR) +
-            namedDecimalGroup("\\-", MONTH) +
-            optionalNamedDecimalGroup("\\-", DATE,
-            optionalNamedDecimalGroup("T", HOUR,
-            optionalNamedDecimalGroup("\\:", MINUTE,
-            optionalNamedDecimalGroup("\\:", SECOND,
-            optionalNamedDecimalGroup("\\.", MILLI))))));
-    }
-
-
-    private static String optionalNamedDecimalGroup(String separator, String name) {
-        return optionalNamedDecimalGroup(separator, name, "");
-    }
-
-
-    private static String optionalNamedDecimalGroup(String separator, String name, String post) {
-        return "(" + separator + namedDecimalGroup(name) + post + ")?";
-    }
-
-
-    private static String namedDecimalGroup(String separator, String name) {
-        return separator + "(" + regexName(name) + "\\d+)";
-    }
-
-
-    private static String namedDecimalGroup(String name) {
-        return "(" + regexName(name) + "\\d+)";
-    }
-
-
-    private static String regexName(String name) {
-        return "?<" + name + ">";
-    }
-
-
-    private static String month(String monthIndex) {
-        if (monthIndex == null) {
-            return null;
-        }
-        return Integer.toString(Integer.parseInt(monthIndex) - 1);
-    }
-
-
-    private static String thousandths(String units) {
-        if (units == null || units.length() >= THOUSANDTHS_LENGTH) {
-            return units;
-        }
-        StringBuilder thousandths = new StringBuilder(units);
-        while (thousandths.length() < 3) {
-            thousandths.append('0');
-        }
-        return thousandths.toString();
-    }
-
-
-    private static void applyIfSet(Calendar calendar, int field, String value) {
-        if (value != null) {
-            calendar.set(field, Integer.parseInt(value));
-        }
-    }
-
 
     private class Label extends Number {
 
@@ -220,7 +137,7 @@ public final class Figures {
             if (! (other instanceof Label)) {
                 return false;
             }
-            return Objects.equals(string, ((Label) other).string);
+            return string.equals(((Label) other).string);
         }
 
         @Override
@@ -240,14 +157,6 @@ public final class Figures {
 
     private final ArrayList<Label> labels = new ArrayList<>();
 
-    private static final String YEAR = "year";
-    private static final String MONTH = "month";
-    private static final String DATE = "date";
-    private static final String HOUR = "hour";
-    private static final String MINUTE = "minute";
-    private static final String SECOND = "second";
-    private static final String MILLI = "milli";
-
-    private static final int THOUSANDTHS_LENGTH = 3;
+    private static final TimestampMatcher TIMESTAMP_MATCHER = new TimestampMatcher();
 
 }

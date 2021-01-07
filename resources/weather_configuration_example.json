@@ -9,6 +9,9 @@
   "XExpandToGrid": true,
   "YWindowMinimum": 0,
   "YWindowMaximum": 100,
+  "tooltipXFormat": "d MMMM",
+  "tooltipYFormat": "%.0f%%",
+  "tooltipFormat": "{x}: {y} {n}",
   "axisStyleDefaults": {
       "axisColor": null, 
       "labelColor": "63-63-63", 

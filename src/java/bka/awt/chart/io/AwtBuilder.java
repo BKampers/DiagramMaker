@@ -7,11 +7,10 @@ package bka.awt.chart.io;
 import bka.awt.chart.custom.*;
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.imageio.*;
 
 
