@@ -15,11 +15,8 @@
   position: relative;
   display: inline-block;
 }
-
 .tooltip .tooltiptext {
   visibility: hidden;
-  /*width: 120px;
-  height: 40px;*/
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -33,7 +30,6 @@
   opacity: 0;
   transition: opacity 0.3s;
 }
-
 .tooltip .tooltiptext::after {
   content: "";
   position: absolute;
@@ -48,8 +44,6 @@
   visibility: visible;
   opacity: 1;
 }
-
-
 .tooltip:hover span {
     display:block;
     position:fixed;
