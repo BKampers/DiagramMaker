@@ -142,13 +142,29 @@ public class DiagramMaker {
         JSONArray coordinates = new JSONArray();
         areaGeometries.forEach((key, graphGeometry) -> {
             graphGeometry.stream()
-                    .filter(point -> point.getArea() != null)
-                    .forEach(point -> {
-                coordinates.put(createAreaObject(point.getArea(), tooltipText(key, point.getX(), point.getY())));
-            });
+                .filter(point -> point.getArea() != null)
+                .forEach(point -> putCoordinate(key, point, coordinates));
         });
         return coordinates.toString();
     }
+
+    private void putCoordinate(Object key, AreaGeometry point, JSONArray coordinates) {
+        Number y = getYData(key, point.getX(), point.getY());
+        coordinates.put(createAreaObject(point.getArea(), tooltipText(key, point.getX(), y)));
+    }
+
+    private Number getYData(Object key, Number xValue, Number yValue) {
+        ChartData<Number, Number> chartData = parsedFigures.getChartData().get(key);
+        Iterator<ChartDataElement<Number, Number>> it = chartData.iterator();
+        while (it.hasNext()) {
+            ChartDataElement<Number, Number> element = it.next();
+            if (xValue.equals(element.getKey())) {
+                return element.getValue();
+            }
+        }
+        return yValue;
+    }
+
 
     private String tooltipText(Object key, Number x, Number y) {
         if (tooltipFormat == null) {
@@ -268,7 +284,7 @@ public class DiagramMaker {
     private Drawable parseDrawable() throws UserDataException {
         Drawable drawable = new Drawable();
         try {
-            Figures parsedFigures = parseFigures();
+            parsedFigures = parseFigures();
             ChartConfiguration parsedConfiguration = parseConfiguration(new YamlReader(getConfiguration()));
             if (parsedConfiguration.getWidth() == null) {
                 parsedConfiguration.setWidth(DEFAULT_IMAGE_WIDTH );
@@ -287,8 +303,7 @@ public class DiagramMaker {
                 highlightRenderer.setYFormat(parsedConfiguration.getTooltipYFormat());
                 drawable.chartRenderer.setPointHighlightRenderer(key, highlightRenderer);
             }
-            Map<Object, ChartData<Number, Number>> chartData = parsedFigures.getChartData();
-            drawable.chartRenderer.setCharts(chartData);
+            drawable.chartRenderer.setCharts(parsedFigures.getChartData());
             drawable.width = parsedConfiguration.getWidth();
             drawable.height = parsedConfiguration.getHeight();
             tooltipFormat = parsedConfiguration.getTooltipFormat();
@@ -565,6 +580,7 @@ public class DiagramMaker {
     private String figures;
     private String source;
 
+    private Figures parsedFigures;
     private Map<Object, List<AreaGeometry>> areaGeometries;
     private String tooltipFormat;
     private String xFormat;
