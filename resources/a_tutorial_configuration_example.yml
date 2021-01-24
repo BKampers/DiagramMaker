@@ -37,6 +37,7 @@
 #       stroke: 
 #           width: 3
 #           dash: [20, 5]
+
 # If you want to see a scatter, configure it like this:
 #graphDefaults:
 #   type: scatter

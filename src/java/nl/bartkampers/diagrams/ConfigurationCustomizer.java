@@ -127,10 +127,10 @@ public class ConfigurationCustomizer {
         if (configuration.getYWindowMinimum() == null && configuration.getYWindowMaximum() == null) {
             double min = Double.MAX_VALUE;
             double max = - Double.MAX_VALUE;
-            for (ChartData<Number, Number> chartData  : figures.getChartData().values()) {
-                Iterator<ChartDataElement<Number, Number>> it = chartData.iterator();
+            for (ChartPoints chartData : figures.getChartData().values()) {
+                Iterator<ChartPoint> it = chartData.iterator();
                 while (it.hasNext()) {
-                    double value = it.next().getValue().doubleValue();
+                    double value = it.next().getY().doubleValue();
                     min = Math.min(min, value);
                     max = Math.max(max, value);
                 }
@@ -181,7 +181,7 @@ public class ConfigurationCustomizer {
 
     private static int getPointCount(Figures figures) {
         int pointCount = 0;
-        for (ChartData<Number, Number> points : figures.getChartData().values()) {
+        for (ChartPoints points : figures.getChartData().values()) {
             pointCount = Math.max(pointCount, points.size());
         }
         return pointCount;

@@ -32,7 +32,7 @@ public class YamlFiguresParserTest {
     }
 
 
-    private void assertCharts(Map<Object, ChartData<Number, Number>> graphs) {
+    private void assertCharts(Map<Object, ChartPoints> graphs) {
         assertEquals(2, graphs.size());
         assertEquals(5, graphs.get("A").size());
         assertEquals(expectedData("1.0", "0.1"), graphs.get("A").get(0));
@@ -47,8 +47,8 @@ public class YamlFiguresParserTest {
     }
 
 
-    private ChartDataElement<Number, Number> expectedData(String x, String y) {
-        return new ChartDataElement<>(new BigDecimal(x), new BigDecimal(y), false);
+    private ChartPoint expectedData(String x, String y) {
+        return new ChartPoint(new BigDecimal(x), new BigDecimal(y));
     }
 
 

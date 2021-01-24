@@ -154,12 +154,12 @@ public class DiagramMaker {
     }
 
     private Number getYData(Object key, Number xValue, Number yValue) {
-        ChartData<Number, Number> chartData = parsedFigures.getChartData().get(key);
-        Iterator<ChartDataElement<Number, Number>> it = chartData.iterator();
+        ChartPoints chartData = parsedFigures.getChartData().get(key);
+        Iterator<ChartPoint> it = chartData.iterator();
         while (it.hasNext()) {
-            ChartDataElement<Number, Number> element = it.next();
-            if (xValue.equals(element.getKey())) {
-                return element.getValue();
+            ChartPoint element = it.next();
+            if (xValue.equals(element.getX())) {
+                return element.getY();
             }
         }
         return yValue;

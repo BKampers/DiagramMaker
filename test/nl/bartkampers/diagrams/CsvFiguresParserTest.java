@@ -23,7 +23,7 @@ public class CsvFiguresParserTest {
     @Test
     public void testPlain() throws UserDataException {
         Figures figures = parser.parse(SOURCE);
-        Map<Object, ChartData<Number, Number>> graphs = figures.getChartData();
+        Map<Object, ChartPoints> graphs = figures.getChartData();
         assertEquals(3, graphs.size());
         assertEquals(3, graphs.get("A").size());
         assertEquals(expectedData("1.0", "0.1"), graphs.get("A").get(0));
@@ -47,27 +47,27 @@ public class CsvFiguresParserTest {
         assertEquals("a", labels.get(1));
         assertEquals("bb", labels.get(2));
         assertEquals("", labels.get(3));
-        ChartData<Number, Number> graph = figures.getChartData().get("A");
-        assertEquals(1, graph.get(0).getKey().intValue());
-        assertEquals(2, graph.get(1).getKey().intValue());
-        assertEquals(3, graph.get(2).getKey().intValue());
+        ChartPoints graph = figures.getChartData().get("A");
+        assertEquals(1, graph.get(0).getX().intValue());
+        assertEquals(2, graph.get(1).getX().intValue());
+        assertEquals(3, graph.get(2).getX().intValue());
     }
 
 
     @Test
     public void testDates() throws UserDataException {
-        Map<Object, ChartData<Number, Number>> graphs = parser.parse(SOURCE_WITH_DATES).getChartData();
-        assertEquals(timestamp(1, Calendar.DECEMBER, 1, 0, 0, 0, 0), graphs.get("A").get(0).getKey().longValue());
-        assertEquals(timestamp(1970, Calendar.JANUARY, 1, 0, 0, 0, 0), graphs.get("A").get(1).getKey().longValue());
-        assertEquals(timestamp(1970, Calendar.FEBRUARY, 1, 12, 0, 0, 0), graphs.get("A").get(2).getKey().longValue());
-        assertEquals(timestamp(1970, Calendar.MARCH, 18, 11, 58, 0, 0), graphs.get("A").get(3).getKey().longValue());
-        assertEquals(timestamp(2000, Calendar.APRIL, 30, 1, 0, 30, 0), graphs.get("A").get(4).getKey().longValue());
-        assertEquals(timestamp(2001, Calendar.MAY, 31, 22, 30, 15, 100), graphs.get("A").get(5).getKey().longValue());
-        assertEquals(timestamp(2002, Calendar.JUNE, 4, 3, 45, 59, 990), graphs.get("A").get(6).getKey().longValue());
-        assertEquals(timestamp(2003, Calendar.JULY, 14, 4, 1, 10, 1), graphs.get("A").get(7).getKey().longValue());
-        assertEquals(timestamp(2004, Calendar.AUGUST, 24, 5, 2, 20, 123), graphs.get("A").get(8).getKey().longValue());
-        assertEquals(timestamp(2005, Calendar.SEPTEMBER, 29, 6, 03, 30, 124), graphs.get("A").get(9).getKey().longValue());
-        assertEquals(timestamp(2006, Calendar.OCTOBER, 30, 7, 4, 41, 0), graphs.get("A").get(10).getKey().longValue());
+        Map<Object, ChartPoints> graphs = parser.parse(SOURCE_WITH_DATES).getChartData();
+        assertEquals(timestamp(1, Calendar.DECEMBER, 1, 0, 0, 0, 0), graphs.get("A").get(0).getX().longValue());
+        assertEquals(timestamp(1970, Calendar.JANUARY, 1, 0, 0, 0, 0), graphs.get("A").get(1).getX().longValue());
+        assertEquals(timestamp(1970, Calendar.FEBRUARY, 1, 12, 0, 0, 0), graphs.get("A").get(2).getX().longValue());
+        assertEquals(timestamp(1970, Calendar.MARCH, 18, 11, 58, 0, 0), graphs.get("A").get(3).getX().longValue());
+        assertEquals(timestamp(2000, Calendar.APRIL, 30, 1, 0, 30, 0), graphs.get("A").get(4).getX().longValue());
+        assertEquals(timestamp(2001, Calendar.MAY, 31, 22, 30, 15, 100), graphs.get("A").get(5).getX().longValue());
+        assertEquals(timestamp(2002, Calendar.JUNE, 4, 3, 45, 59, 990), graphs.get("A").get(6).getX().longValue());
+        assertEquals(timestamp(2003, Calendar.JULY, 14, 4, 1, 10, 1), graphs.get("A").get(7).getX().longValue());
+        assertEquals(timestamp(2004, Calendar.AUGUST, 24, 5, 2, 20, 123), graphs.get("A").get(8).getX().longValue());
+        assertEquals(timestamp(2005, Calendar.SEPTEMBER, 29, 6, 03, 30, 124), graphs.get("A").get(9).getX().longValue());
+        assertEquals(timestamp(2006, Calendar.OCTOBER, 30, 7, 4, 41, 0), graphs.get("A").get(10).getX().longValue());
     }
 
 
@@ -79,8 +79,8 @@ public class CsvFiguresParserTest {
     }
 
 
-    private ChartDataElement<Number, Number> expectedData(String x, String y) {
-        return new ChartDataElement<>(new BigDecimal(x), new BigDecimal(y), false);
+    private ChartPoint expectedData(String x, String y) {
+        return new ChartPoint(new BigDecimal(x), new BigDecimal(y));
     }
 
 

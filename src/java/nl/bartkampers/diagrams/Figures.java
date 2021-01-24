@@ -19,7 +19,7 @@ public final class Figures {
 
 
     public void add(Object key, String xText, String yText) throws UserDataException {
-        ChartData<Number, Number> chartData = data.computeIfAbsent(key, k -> new ChartData<>());
+        ChartPoints chartData = data.computeIfAbsent(key, k -> new ChartPoints());
         chartData.add(qualifiedNumber(key, xText, xTypes), qualifiedNumber(key, yText, yTypes));
     }
 
@@ -47,7 +47,7 @@ public final class Figures {
     }
 
 
-    public Map<Object, ChartData<Number, Number>> getChartData() {
+    public Map<Object, ChartPoints> getChartData() {
         return Collections.unmodifiableMap(data);
     }
 
@@ -151,7 +151,7 @@ public final class Figures {
     }
 
 
-    private final Map<Object, ChartData<Number, Number>> data = new LinkedHashMap<>();
+    private final Map<Object, ChartPoints> data = new LinkedHashMap<>();
     private final Map<Object, EnumSet<DataType>> xTypes = new HashMap<>();
     private final Map<Object, EnumSet<DataType>> yTypes = new HashMap<>();
 

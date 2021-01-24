@@ -490,11 +490,11 @@ public class ChartRendererBuilder {
 
 
     private Color[][] buildColors(Map<String, java.util.List<String>> colorsByKey, Color[] defaults) throws ChartConfigurationException {
-        ChartData<Number, Number> chartData = figures.getChartData().values().iterator().next();
+        ChartPoints chartData = figures.getChartData().values().iterator().next();
         Color[][] colors = new Color[chartData.size()][];
         int i = 0;
-        for (ChartDataElement<Number, Number> element : chartData) {
-            java.util.List<String> colorCodes = colorsByKey.get(Objects.toString(element.getKey()));
+        for (ChartPoint element : chartData) {
+            java.util.List<String> colorCodes = colorsByKey.get(Objects.toString(element.getX()));
             if (colorCodes != null) {
                 colors[i] = awtBuilder.buildColors(colorCodes);
             }
