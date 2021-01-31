@@ -25,8 +25,8 @@
         <div>
             <%for (Map.Entry<String, String[]> example : examples.entrySet()) {%>
                 <%
-                    String configuration = diagramMaker.readString(example.getValue()[0]);
-                    String figures = diagramMaker.readString(example.getValue()[1]);
+                    String configuration = diagramMaker.readFile(example.getValue()[0]);
+                    String figures = diagramMaker.readFile(example.getValue()[1]);
                     diagramMaker.setSource(null);
                     diagramMaker.setConfiguration(configuration);
                     diagramMaker.setFigures(figures);

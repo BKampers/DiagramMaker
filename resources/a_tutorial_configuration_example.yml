@@ -125,7 +125,7 @@
 #      axisStyle:
 #          labelOffset: 25
 
-# If you want to see a pie chart cnfigure like this:
+# If you want to see a pie chart configure like this:
 #graphDefaults:
 #   type: pie
 # Note that you can have only have two colums in your figures. The first column

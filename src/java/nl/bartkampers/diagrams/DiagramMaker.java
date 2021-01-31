@@ -33,10 +33,10 @@ public class DiagramMaker {
 
     public String getConfiguration() {
         if (EXAMPLE.equals(source)) {
-            return readString(configuration);
+            return readFile(configuration);
         }
         if (configuration == null) {
-            configuration = readString("southpole_configuration_example.yml");
+            configuration = readFile("southpole_configuration_example.yml");
         }
         return configuration;
     }
@@ -49,17 +49,17 @@ public class DiagramMaker {
 
     public String getFigures() {
         if (EXAMPLE.equals(source)) {
-            return readString(figures);
+            return readFile(figures);
         }
         if (figures == null) {
-            figures = readString("southpole_figures_example.csv");
+            figures = readFile("southpole_figures_example.csv");
         }
         return figures;
     }
 
     
-    public void setFigures(String figures) { 
-        figuresModified = figures != null && ! figures.equals(this.figures);
+    public void setFigures(String figures) {
+        figuresModified = figures != null && !figures.equals(this.figures);
         this.figures = figures;
     }
 
@@ -75,7 +75,13 @@ public class DiagramMaker {
 
 
     public void setRequest(HttpServletRequest request) {
-        this.request = Objects.requireNonNull(request);
+        try {
+            request.setCharacterEncoding("UTF-8");
+            this.request = request;
+        }
+        catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(DiagramMaker.class.getName()).log(Level.WARNING, null, ex);
+        }
     }
 
 
@@ -231,12 +237,9 @@ public class DiagramMaker {
         }
         catch (UserDataException ex) {
             log(Level.WARNING, "Could not read configuration", ex);
-            BufferedImage image = new BufferedImage(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, type);
-            drawException((Graphics2D) image.getGraphics(), ex);
-            return image;
+            return createImage(type, ex);
         }
     }
-
 
     private BufferedImage createImage(Drawable drawable, int type) {
         areaGeometries = null;
@@ -257,6 +260,18 @@ public class DiagramMaker {
         return image;
     }
 
+    private BufferedImage createImage(int type, UserDataException exception) {
+        BufferedImage image = new BufferedImage(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, type);
+        drawException((Graphics2D) image.getGraphics(), exception);
+        return image;
+    }
+
+    private void drawException(Graphics2D g2d, Exception exception) {
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setColor(Color.RED);
+        exceptionMessage = exception.getMessage();
+        g2d.drawString(exceptionMessage, 0, 200);
+    }
 
     private Point getClickCoordinate() {
         String x = request.getParameter("clickX");
@@ -271,15 +286,6 @@ public class DiagramMaker {
         }
         return null;
     }
-
-
-    private void drawException(Graphics2D g2d, Exception exception) {
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2d.setColor(Color.RED);
-        exceptionMessage = exception.getMessage();
-        g2d.drawString(exceptionMessage, 0, 200);
-    }
-
 
     private Drawable parseDrawable() throws UserDataException {
         Drawable drawable = new Drawable();
@@ -463,7 +469,7 @@ public class DiagramMaker {
     }
     
 
-    public String readString(String filename) {
+    public String readFile(String filename) {
         try {
             return new String(Files.readAllBytes(getPath(RESOURCES_DIRECTORY, filename)));
         }
