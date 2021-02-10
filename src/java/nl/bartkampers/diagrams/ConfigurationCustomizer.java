@@ -9,6 +9,7 @@ import bka.awt.chart.io.*;
 import bka.awt.chart.render.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 public class ConfigurationCustomizer {
@@ -91,22 +92,62 @@ public class ConfigurationCustomizer {
         return true;
     }
 
-
     private void adjustBars() {
         int width = configuration.getWidth();
         int graphCount = figures.getChartData().size();
-        int pointCount = getPointCount(figures);
-        applyIfNull(configuration.getLeftOffset(), () -> configuration.setLeftOffset(width / pointCount / 2));
-        applyIfNull(configuration.getRightOffset(), () -> configuration.setRightOffset(width / pointCount / 2));
-        int barWidth = (width - configuration.getLeftOffset() - configuration.getRightOffset()) / (graphCount * pointCount + 2);
-        if (configuration.getGraphDefaults() == null) {
-            configuration.setGraphDefaults(new DataRendererConfiguration());
+        int pointCount = getPointCount();
+        if (pointCount > 1) {
+            applyIfNull(configuration.getLeftOffset(), () -> configuration.setLeftOffset(width / pointCount / 2));
+            applyIfNull(configuration.getRightOffset(), () -> configuration.setRightOffset(width / pointCount / 2));
         }
-        applyIfNull(configuration.getGraphDefaults().getWidth(), () -> configuration.getGraphDefaults().setWidth(barWidth));
+        else {
+            applyIfNull(configuration.getLeftOffset(), () -> configuration.setLeftOffset(0));
+            applyIfNull(configuration.getRightOffset(), () -> configuration.setRightOffset(0));
+        }
+        applyIfNull(configuration.getGraphDefaults().getWidth(), () -> configuration.getGraphDefaults().setWidth(computeBarWidth(width, graphCount, pointCount)));
         if (! anyShift()) {
             applyIfNull(configuration.getGraphDefaults().getAutoShift(), () -> configuration.getGraphDefaults().setAutoShift(Boolean.TRUE));
         }
         adjustBarYWindow();
+    }
+
+    private int computeBarWidth(int width, int graphCount, int pointCount) {
+        int barWidth = (width - configuration.getLeftOffset() - configuration.getRightOffset() - configuration.getLeftMargin() - configuration.getRightMargin()) / (graphCount * pointCount + 2);
+        if (configuration.getGraphDefaults() == null) {
+            configuration.setGraphDefaults(new DataRendererConfiguration());
+        }
+        return barWidth;
+    }
+
+    private int getPointCount() {
+        List<Number> xValues = figures.xValues();
+        int pointCount;
+        if (xValues.size() >= 2) {
+            double xMin = xValues.get(0).doubleValue();
+            double xMax = xValues.get(xValues.size() - 1).doubleValue();
+            pointCount = (int) ((xMax - xMin) / smallestDistance());
+        }
+        else {
+            pointCount = 0;
+            for (ChartPoints points : figures.getChartData().values()) {
+                pointCount = Math.max(pointCount, points.size());
+            }
+        }
+        return pointCount;
+    }
+
+    private double smallestDistance() {
+        double smallest = Double.POSITIVE_INFINITY;
+        Iterator<Number> it = figures.xValues().iterator();
+        if (it.hasNext()) {
+            double previous = it.next().doubleValue();
+            while (it.hasNext()) {
+                double x = it.next().doubleValue();
+                smallest = Math.min(smallest, x - previous);
+                previous = x;
+            }
+        }
+        return smallest;
     }
 
     private boolean anyShift() {
@@ -177,16 +218,6 @@ public class ConfigurationCustomizer {
     private int getDefaultSymbolHeight() {
         return (configuration.getGraphDefaults() != null) ? nonNullInt(configuration.getGraphDefaults().getHeight()) : 0;
     }
-
-
-    private static int getPointCount(Figures figures) {
-        int pointCount = 0;
-        for (ChartPoints points : figures.getChartData().values()) {
-            pointCount = Math.max(pointCount, points.size());
-        }
-        return pointCount;
-    }
-
 
     private static void applyIfNull(Object test, Runnable runnable) {
         if (test == null) {

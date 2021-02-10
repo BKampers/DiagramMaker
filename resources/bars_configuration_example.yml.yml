@@ -1,0 +1,8 @@
+width: 1500
+tooltipFormat: "{x} {n} = {y}"
+tooltipXFormat: dd MMM yyyy
+graphDefaults:
+   type: bar
+legendPosition: 
+   x: 1400
+   y: 10

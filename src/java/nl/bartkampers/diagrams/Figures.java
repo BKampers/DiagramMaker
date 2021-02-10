@@ -61,6 +61,16 @@ public final class Figures {
         return Collections.unmodifiableMap(yTypes);
     }
 
+    public List<Number> xValues() {
+        SortedSet<Number> set = new TreeSet<>();
+        for (ChartPoints points : getChartData().values()) {
+            Iterator<ChartPoint> it = points.iterator();
+            while (it.hasNext()) {
+                set.add(it.next().getX());
+            }
+        }
+        return new ArrayList<>(set);
+    }
 
     public EnumSet<DataType> typeSet(Map<Object, EnumSet<DataType>> typeMap) {
         EnumSet<DataType> types = EnumSet.noneOf(DataType.class);
@@ -97,7 +107,7 @@ public final class Figures {
     }
 
 
-    private class Label extends Number {
+    private class Label extends Number implements Comparable<Number> {
 
         Label(String string, int value) {
             this.string = string;
@@ -134,10 +144,15 @@ public final class Figures {
             if (other == this) {
                 return true;
             }
-            if (! (other instanceof Label)) {
+            if (other == null || other.getClass() != Label.class) {
                 return false;
             }
-            return string.equals(((Label) other).string);
+            return Objects.equals(string, ((Label) other).string);
+        }
+
+        @Override
+        public int compareTo(Number other) {
+            return Integer.compare(value, other.intValue());
         }
 
         @Override
