@@ -2,8 +2,6 @@
     © Bart Kampers
 --%>
 
-<%@page import="java.util.Enumeration"%>
-<%@page import="java.util.Map"%>
 <%@page import="nl.bartkampers.diagrams.DiagramMaker"%>
 <%@page language="java" contentType="text/html" pageEncoding="UTF-8"%>
 
