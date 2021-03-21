@@ -8,6 +8,7 @@
 
 <%
     diagramMaker.setRequest(request);
+    diagramMaker.setSession(session);
     diagramMaker.setFigures(request.getParameter("figures"));
     String configuration = request.getParameter("configuration");
     diagramMaker.setConfiguration((configuration == null) ? "" : configuration);

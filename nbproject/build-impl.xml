@@ -1006,8 +1006,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.Java_Mail.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Lombok.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.YamlBeans.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.BKA.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.AWT-1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.BKA.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.ChartPlotter-resources}" todir="${build.web.dir}//resources"/>
         <copyfiles files="${file.reference.DiagramMaker-config}" todir="${build.web.dir}//config"/>
         <copyfiles files="${file.reference.DiagramMaker-logging}" todir="${build.web.dir}//logging"/>
@@ -1019,8 +1019,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.Java_Mail.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.Lombok.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.YamlBeans.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.BKA.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.AWT-1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${reference.BKA.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.ChartPlotter-resources}" todir="${build.web.dir}//resources"/>
         <copyfiles files="${file.reference.DiagramMaker-config}" todir="${build.web.dir}//config"/>
         <copyfiles files="${file.reference.DiagramMaker-logging}" todir="${build.web.dir}//logging"/>
