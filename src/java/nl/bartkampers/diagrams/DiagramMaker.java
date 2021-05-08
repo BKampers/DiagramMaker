@@ -503,12 +503,13 @@ public class DiagramMaker {
         }
     }
 
-
     private void saveLog(Throwable throwable) {
         try {
             Path path = getEnsuredPath(LOGGING_DIRECTORY, "log.txt");
             StringBuilder logs = new StringBuilder(new String(Files.readAllBytes(path)));
             StringBuilder newLog = new StringBuilder(new Date().toString()).append('\n');
+            newLog.append(getString(() -> request.getRemoteHost())).append('\n');
+            newLog.append(getString(() -> request.getServerName())).append('\n');
             newLog.append(getStackTrace(throwable)).append('\n');
             int overSize = logs.length() + newLog.length() - MAX_LOG_LENGTH;
             if (overSize > 0) {
@@ -522,7 +523,6 @@ public class DiagramMaker {
         }
     }
 
-
     private static String getStackTrace(Throwable throwable) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -530,29 +530,20 @@ public class DiagramMaker {
         return stringWriter.toString();
     }
 
-
     private Path getEnsuredPath(String directory, String filename) throws IOException {
         Path path = getPath(directory, filename);
         if (! Files.exists(path)) {
             Files.createFile(path);
             Set<PosixFilePermission> perms = new HashSet<>();
-            //add owners permission
             perms.add(PosixFilePermission.OWNER_READ);
             perms.add(PosixFilePermission.OWNER_WRITE);
             perms.add(PosixFilePermission.OWNER_EXECUTE);
-            //add group permissions
             perms.add(PosixFilePermission.GROUP_READ);
-//            perms.add(PosixFilePermission.GROUP_WRITE);
-//            perms.add(PosixFilePermission.GROUP_EXECUTE);
-            //add others permissions
             perms.add(PosixFilePermission.OTHERS_READ);
-//            perms.add(PosixFilePermission.OTHERS_WRITE);
-//            perms.add(PosixFilePermission.OTHERS_EXECUTE);
             Files.setPosixFilePermissions(path, perms);
         }
         return path;
     }
-
 
     private Path getPath(String directory, String filename) {
         return FileSystems.getDefault().getPath(getRealPath(directory), filename);
@@ -609,7 +600,7 @@ public class DiagramMaker {
     private static final String LOGGING_DIRECTORY = "logging";
     private static final String RESOURCES_DIRECTORY = "resources";
 
-    private static final int MAX_LOG_LENGTH = 20000;
+    private static final int MAX_LOG_LENGTH = 100000;
 
     private static final int DEFAULT_IMAGE_HEIGHT = 400;
     private static final int DEFAULT_IMAGE_WIDTH = 500;
